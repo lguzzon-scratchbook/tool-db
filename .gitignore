@@ -2,6 +2,7 @@ _____peer
 _____peer_**
 .DS_Store
 .yarn
+bun.lock
 bundle.js
 coverage
 dist
