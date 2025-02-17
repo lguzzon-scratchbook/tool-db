@@ -52,9 +52,10 @@
     "test": "jest --clearCache && jest ./ --detectOpenHandles",
     "test:watch": "jest --watch ./",
     "update": "bun x --node --yes npm-check-updates -u --peer -d --doctorInstall \"npm run update:doctor:install\" --doctorTest \"npm run update:doctor:test\"",
-    "update:doctor": "npm run reset:modules && npm run update:doctor:install && npm run update:doctor:test",
-    "update:doctor:install": "node --version && npm install --legacy-peer-deps",
-    "update:doctor:test": "npm run clean:all && npm run build && npm run test"
+    "update:doctor": "bun run reset:modules && bun run update:doctor:install && bun run update:doctor:build",
+    "update:doctor:install": "node --version && (bun install || bun install --legacy-peer-deps)",
+    "update:doctor:build": "bun run clean:all && bun run build",
+    "update:doctor:test": "bun run clean:all && bun run build && bun run test"
   },
   "version": "0.0.0",
   "watch": {
