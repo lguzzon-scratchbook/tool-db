@@ -1,5 +1,3 @@
-import { EncryptedKeystoreV3Json, Account } from "web3-core";
-import w3 from "web3";
 
 import {
   ToolDb,
@@ -8,10 +6,14 @@ import {
   randomAnimal,
 } from "tool-db";
 
+import w3 from "web3";
+import { KeyStore } from "web3";
+import { Web3Account } from "web3-eth-accounts";
+
 export default class ToolDbWeb3User extends ToolDbUserAdapter {
   public web3: w3;
 
-  private _user: Account;
+  private _user: Web3Account;
   private _userName: string;
 
   constructor(db: ToolDb) {
@@ -26,7 +28,7 @@ export default class ToolDbWeb3User extends ToolDbUserAdapter {
     this._userName = randomAnimal();
   }
 
-  public setUser(account: Account, name: string): void {
+  public setUser(account: Web3Account, name: string): void {
     this._user = account;
     this._userName = name;
   }
@@ -54,7 +56,7 @@ export default class ToolDbWeb3User extends ToolDbUserAdapter {
     return Promise.resolve(this._user.encrypt(password));
   }
 
-  public decryptAccount(acc: EncryptedKeystoreV3Json, password: string) {
+  public decryptAccount(acc: string, password: string) {
     try {
       const newAccount = this.web3.eth.accounts.decrypt(acc, password);
       return Promise.resolve(newAccount);
