@@ -77,13 +77,13 @@ export async function serve(config: ServeConf): Promise<toolDb.ToolDb> {
                     if (msg.type === "put") {
                         console.log(
                             `${new Date().toLocaleTimeString()}\t[${colors.yellow(watchKey)}] =>`,
-                            colors.green(JSON.stringify(msg.v, null, "\t"))
+                            colors.green(JSON.stringify(msg.v, null, "\t")),
                         );
                     } else {
                         // CRDT
                         console.log(
                             `${new Date().toLocaleTimeString()}\t[${colors.yellow(watchKey)}]`,
-                            colors.yellow("CRDT")
+                            colors.yellow("CRDT"),
                         );
                     }
                 });
