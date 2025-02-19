@@ -29,6 +29,7 @@
   "license": "ISC",
   "name": "@tool-db/tool-db",
   "optionalDependencies": {
+    "@isaacs/ttlcache": "^1.4.1",
     "level": "^7.0.0",
     "simple-peer": "^9.11.1",
     "web3": "^4.16.0",

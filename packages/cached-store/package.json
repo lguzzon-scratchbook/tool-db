@@ -1,0 +1,30 @@
+{
+  "name": "@tool-db/cached-store",
+  "version": "1.0.5",
+  "description": "cached store adapter for tool-db",
+  "author": "Manwe <manuel.etchegaray7@gmail.com>",
+  "homepage": "https://github.com/Manwe-777/tool-db#readme",
+  "license": "ISC",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Manwe-777/tool-db.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublish": "npm run build"
+  },
+  "bugs": {
+    "url": "https://github.com/Manwe-777/tool-db/issues"
+  },
+  "dependencies": {
+    "@isaacs/ttlcache": "^1.4.1",
+    "level": "^7.0.0",
+    "tool-db": "workspace/*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "gitHead": "dd61e164db2b5d8416663c7b3d11d40a38f94c80"
+}

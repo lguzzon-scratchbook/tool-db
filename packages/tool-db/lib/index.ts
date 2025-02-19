@@ -21,6 +21,7 @@ export { default as hexToUint8 } from "./utils/encoding/hexToUint8";
 
 export { default as ToolDbNetworkAdapter } from "./adapters-base/networkAdapter";
 export { default as ToolDbStorageAdapter } from "./adapters-base/storageAdapter";
+export { ToolDbStorageAdapterAdapter } from "./adapters-base/storageAdapter";
 export { default as ToolDbUserAdapter } from "./adapters-base/userAdapter";
 
 export * from "./types/tooldb";

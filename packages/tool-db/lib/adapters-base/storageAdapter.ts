@@ -33,3 +33,17 @@ export default class ToolDbStorageAdapter {
     return Promise.resolve([]);
   }
 }
+
+
+export class ToolDbStorageAdapterAdapter extends ToolDbStorageAdapter {
+  private _storage: ToolDbStorageAdapter;
+
+  get storage() {
+    return this._storage;
+  }
+
+  constructor(storageAdapter: ToolDbStorageAdapter, forceStorageName?: string) {
+    super(storageAdapter.tooldb, forceStorageName);
+    this._storage = storageAdapter;
+  }
+}
