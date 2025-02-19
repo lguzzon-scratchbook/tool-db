@@ -98,7 +98,7 @@ let Chris: ToolDb;
 
 
     setTimeout(() => {
-    const testKey = "test-key-" + textRandom(16);
+    const testKey = `test-key-${textRandom(16)}`;
     const testValue = "Awesome value";
 
     Alice.putData(testKey, testValue).then((msg) => {

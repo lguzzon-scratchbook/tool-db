@@ -52,7 +52,7 @@ export default class toolDbRedis extends ToolDbStorageAdapter {
     return new Promise<string[]>((resolve, reject) => {
       if (this.connected) {
         this.redisClient
-          .keys(key + "*")
+          .keys(`${key}*`)
           .then((v) => {
             if (v) resolve(v);
             else reject(new Error("Error retrieving data"));

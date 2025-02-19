@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 
 export default function sha1(str: string): string {
   const hash = crypto.createHash("sha1");

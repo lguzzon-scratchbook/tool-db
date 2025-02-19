@@ -76,7 +76,7 @@ export default class ToolDbLeveldb extends ToolDbStorageAdapter {
         this.database
           .createKeyStream({
             gte: key,
-            lte: key + "\uffff",
+            lte: `${key}\uffff`,
           })
           .on("data", (data: string) => {
             // if (data.startsWith(key)) {

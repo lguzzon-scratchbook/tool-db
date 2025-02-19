@@ -1,5 +1,5 @@
-import type { Server as HTTPServer } from "http";
-import type { Server as HTTPSServer } from "https";
+import type { Server as HTTPServer } from "node:http";
+import type { Server as HTTPSServer } from "node:https";
 
 import type {
   ToolDb,

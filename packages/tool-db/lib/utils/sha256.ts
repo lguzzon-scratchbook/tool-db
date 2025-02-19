@@ -1,4 +1,4 @@
-import crypto, { type BinaryLike } from "crypto";
+import crypto, { type BinaryLike } from "node:crypto";
 
 export default function sha256(str: BinaryLike): string {
   const hash = crypto.createHash("sha256");

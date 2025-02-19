@@ -1,4 +1,4 @@
-import EventEmitter from "events";
+import EventEmitter from "node:events";
 
 import {
   type Peer,
@@ -159,7 +159,7 @@ export default class ToolDb extends EventEmitter {
   };
 
   public getUserNamespacedKey(key: string) {
-    return ":" + (this.userAccount?.getAddress() || "") + "." + key;
+    return `:${this.userAccount?.getAddress() || ""}.${key}`;
   }
 
   /**
@@ -312,7 +312,7 @@ export default class ToolDb extends EventEmitter {
     // DO NOT USE THE DEFAULT STORE FOR KEYS
     const tempStore = new this.options.storageAdapter(
       this,
-      "_____peer_" + this.options.storageName
+      `_____peer_${this.options.storageName}`
     );
 
     tempStore

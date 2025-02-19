@@ -13,13 +13,11 @@ export default function logger(
     const isNode = typeof window === "undefined";
     const title = isNode
       ? this.options.storageName
-      : "%c" + this.options.storageName;
+      : `%c${this.options.storageName}`;
 
     const style = isNode
       ? ""
-      : "background: #" +
-        sha1(this.options.storageName).slice(-6) +
-        "; padding: 2px; color: black";
+      : `background: #${sha1(this.options.storageName).slice(-6)}; padding: 2px; color: black`;
 
     console.log(
       title,

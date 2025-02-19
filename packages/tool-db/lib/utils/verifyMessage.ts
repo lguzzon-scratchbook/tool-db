@@ -34,13 +34,13 @@ export default async function verifyMessage<T>(
 
   // This is a user namespace
   let addressNamespace: false | string = false;
-  if (msg.k.slice(0, 1) == ":") {
+  if (msg.k.slice(0, 1) === ":") {
     addressNamespace = msg.k.split(".")[0].slice(1);
   }
 
   // This namespace can only be written if data does not exist previously
   // This violates the offline first principle..?
-  if (msg.k.slice(0, 2) == "==") {
+  if (msg.k.slice(0, 2) === "==") {
     const key = msg.k;
     const data = await this.store
       .get(key)

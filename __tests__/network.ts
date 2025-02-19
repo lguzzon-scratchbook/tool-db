@@ -129,7 +129,7 @@ it("A and B are signed in", () => {
 
 it("A can put and get", (done) => {
   setTimeout(() => {
-    const testKey = "test-key-" + textRandom(16);
+    const testKey = `test-key-${textRandom(16)}`;
     const testValue = "Cool value";
 
     Alice.putData(testKey, testValue).then((msg) => {
@@ -146,7 +146,7 @@ it("A can put and get", (done) => {
 
 it("A and B can communicate trough the swarm", (done) => {
   setTimeout(() => {
-    const testKey = "test-key-" + textRandom(16);
+    const testKey = `test-key-${textRandom(16)}`;
     const testValue = "Awesome value";
 
     Alice.putData(testKey, testValue).then((msg) => {
@@ -164,7 +164,7 @@ it("A and B can communicate trough the swarm", (done) => {
 
 it("A cand send and C can recieve from a subscription", (done) => {
   setTimeout(() => {
-    const testKey = "test-key-" + textRandom(16);
+    const testKey = `test-key-${textRandom(16)}`;
     const testValue = "im a value";
 
     let recievedMessage: VerificationData<string> | undefined = undefined;
@@ -192,7 +192,7 @@ it("A cand send and C can recieve from a subscription", (done) => {
 
 it("A can sign up and B can sign in", (done) => {
   setTimeout(() => {
-    const testUsername = "test-username-" + textRandom(16);
+    const testUsername = `test-username-${textRandom(16)}`;
     const testPassword = "im a password";
     Alice.signUp(testUsername, testPassword)
       .then((result) => {
@@ -206,7 +206,7 @@ it("A can sign up and B can sign in", (done) => {
 
               // test for failed sign in
               setTimeout(() => {
-                Bob.signIn(testUsername, testPassword + " ").catch((e) => {
+                Bob.signIn(testUsername, `${testPassword} `).catch((e) => {
                   expect(e.message).toBe(
                     "Key derivation failed - possibly wrong password"
                   );
@@ -227,7 +227,7 @@ it("A can sign up and B can sign in", (done) => {
 
 it("Can cancel GET timeout", (done) => {
   setTimeout(() => {
-    const testKey = "timeout-test-" + textRandom(16);
+    const testKey = `timeout-test-${textRandom(16)}`;
     const testValue = textRandom(24);
 
     Alice.putData(testKey, testValue).then(() => {
@@ -271,7 +271,7 @@ it("Server function may not be found", () => {
 
 it("CRDTs", (done) => {
   setTimeout(() => {
-    const crdtKey = "crdt-test-" + textRandom(16);
+    const crdtKey = `crdt-test-${textRandom(16)}`;
     const crdtValue = textRandom(24);
 
     const AliceDoc = new MapCrdt("Alice");

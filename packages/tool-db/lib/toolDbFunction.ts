@@ -20,7 +20,7 @@ export default function toolDbFunction<R, A = GenericObject>(
   timeoutMs = 10000
 ): Promise<FunctionReturn<R>> {
   return new Promise((resolve, reject) => {
-    this.logger("FUNCTION > " + fName);
+    this.logger(`FUNCTION > ${fName}`);
 
     const msgId = textRandom(10);
 
@@ -29,7 +29,7 @@ export default function toolDbFunction<R, A = GenericObject>(
     }, timeoutMs);
 
     this.addIdListener(msgId, (msg) => {
-      this.logger("FUNCTION RECV  > " + fName, msg);
+      this.logger(`FUNCTION RECV  > ${fName}`, msg);
 
       clearTimeout(cancelTimeout);
       if (msg.type === "functionReturn") {

@@ -94,37 +94,37 @@ it("Can catch tampered POW", () => {
 });
 
 it("Can catch messages with missing data", () => {
-  const delA: any = delete { ...putOk }.h;
+  const delA: any = { ...putOk }.h = undefined;
   const pa = ClientA.verifyMessage(delA).then((result) => {
     expect(result).toEqual(VerifyResult.InvalidData);
   });
 
-  const delB: any = delete { ...putOk }.k;
+  const delB: any = { ...putOk }.k = undefined;
   const pb = ClientA.verifyMessage(delB).then((result) => {
     expect(result).toEqual(VerifyResult.InvalidData);
   });
 
-  const delC: any = delete { ...putOk }.n;
+  const delC: any = { ...putOk }.n = undefined;
   const pc = ClientA.verifyMessage(delC).then((result) => {
     expect(result).toEqual(VerifyResult.InvalidData);
   });
 
-  const delD: any = delete { ...putOk }.a;
+  const delD: any = { ...putOk }.a = undefined;
   const pd = ClientA.verifyMessage(delD).then((result) => {
     expect(result).toEqual(VerifyResult.InvalidData);
   });
 
-  const delE: any = delete { ...putOk }.s;
+  const delE: any = { ...putOk }.s = undefined;
   const pe = ClientA.verifyMessage(delE).then((result) => {
     expect(result).toEqual(VerifyResult.InvalidData);
   });
 
-  const delF: any = delete { ...putOk }.t;
+  const delF: any = { ...putOk }.t = undefined;
   const pf = ClientA.verifyMessage(delF).then((result) => {
     expect(result).toEqual(VerifyResult.InvalidData);
   });
 
-  const delG: any = delete { ...putOk }.v;
+  const delG: any = { ...putOk }.v = undefined;
   const pg = ClientA.verifyMessage(delG).then((result) => {
     expect(result).toEqual(VerifyResult.InvalidData);
   });

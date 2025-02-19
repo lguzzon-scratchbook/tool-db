@@ -140,7 +140,7 @@ export class ListCrdt<T> extends BaseCrdt<T, ListChanges<T>, T[]> {
       p: currentPrev?.index,
       n: currentNext?.index,
       v: value,
-      i: this._author + "-" + `${ourChanges.length}`.padStart(8, "0"),
+      i: `${this._author}-${`${ourChanges.length}`.padStart(8, "0")}`,
     });
     this.calculate();
   }
@@ -163,7 +163,7 @@ export class ListCrdt<T> extends BaseCrdt<T, ListChanges<T>, T[]> {
       p: currentPrev?.index,
       n: undefined,
       v: value,
-      i: this._author + "-" + `${ourChanges.length}`.padStart(8, "0"),
+      i: `${this._author}-${`${ourChanges.length}`.padStart(8, "0")}`,
     });
     this.calculate();
   }
@@ -183,7 +183,7 @@ export class ListCrdt<T> extends BaseCrdt<T, ListChanges<T>, T[]> {
     this._changes.push({
       t: "DEL",
       v: current.index,
-      i: this._author + "-" + `${ourChanges.length}`.padStart(8, "0"),
+      i: `${this._author}-${`${ourChanges.length}`.padStart(8, "0")}`,
     });
     this.calculate();
   }

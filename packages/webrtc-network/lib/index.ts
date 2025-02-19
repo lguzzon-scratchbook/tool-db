@@ -58,7 +58,7 @@ export default class toolDbWebrtc extends ToolDbNetworkAdapter {
   private peersCheck() {
     Object.keys(this.clientToSend).forEach((id) => {
       if (!this.isConnected(id)) {
-        this.tooldb.logger("disconnected from " + id);
+        this.tooldb.logger(`disconnected from ${id}`);
         this.onClientDisconnect(id);
         const peer = this.peerMap[id];
         if (peer) {

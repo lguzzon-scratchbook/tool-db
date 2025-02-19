@@ -57,12 +57,8 @@ export default class ToolDbWeb3User extends ToolDbUserAdapter {
   }
 
   public decryptAccount(acc: string, password: string) {
-    try {
       const newAccount = this.web3.eth.accounts.decrypt(acc, password);
       return Promise.resolve(newAccount);
-    } catch (e) {
-      throw e;
-    }
   }
 
   public getAddress(): string {

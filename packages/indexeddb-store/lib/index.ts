@@ -23,7 +23,7 @@ export default class ToolDbIndexedb extends ToolDbStorageAdapter {
 
     // reset webkit bug?
     setInterval(() => {
-      this.database && this.database.close();
+      this.database?.close();
       this.dbStart();
     }, 1000 * 15);
   }
@@ -38,7 +38,7 @@ export default class ToolDbIndexedb extends ToolDbStorageAdapter {
       }
       const tx = this.database.transaction([this.storageName], "readwrite");
       const obj = tx.objectStore(this.storageName);
-      const req = obj.put(data, "" + key);
+      const req = obj.put(data, `${key}`);
 
       req.onsuccess =
         // obj.onsuccess =
@@ -70,7 +70,7 @@ export default class ToolDbIndexedb extends ToolDbStorageAdapter {
       }
       const tx = this.database.transaction([this.storageName], "readonly");
       const obj = tx.objectStore(this.storageName);
-      const req = obj.get("" + key);
+      const req = obj.get(`${key}`);
       req.onsuccess = () => {
         resolve(req.result);
       };
@@ -92,7 +92,7 @@ export default class ToolDbIndexedb extends ToolDbStorageAdapter {
         return;
       }
       try {
-        const keyRange = IDBKeyRange.bound(key, key + "|", true, true);
+        const keyRange = IDBKeyRange.bound(key, `${key}|`, true, true);
 
         const tx = this.database.transaction([this.storageName], "readonly");
         const obj = tx.objectStore(this.storageName);

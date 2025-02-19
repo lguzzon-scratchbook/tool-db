@@ -97,10 +97,10 @@ export default class ToolDbWebsocket extends ToolDbNetworkAdapter {
     port: number,
     connectionId?: string
   ): WebSocket | undefined => {
-    this.tooldb.logger("connectTo:", host + ":" + port);
+    this.tooldb.logger("connectTo:", `${host}:${port}`);
     try {
       const wsUrl =
-        port === 443 ? "wss://" + host : "ws://" + host + ":" + port;
+        port === 443 ? `wss://${host}` : `ws://${host}:${port}`;
       const wss = new this._wss(wsUrl);
       const connId = connectionId || textRandom(10);
       let clientId = "";

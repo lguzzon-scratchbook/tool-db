@@ -1,15 +1,15 @@
 
-var __importDefault = (this && this.__importDefault) || ((mod) => (mod && mod.__esModule) ? mod : { "default": mod });
+const __importDefault = (this && this.__importDefault) || ((mod) => (mod?.__esModule) ? mod : { "default": mod });
 Object.defineProperty(exports, "__esModule", { value: true });
-var index_1 = require("../packages/tool-db/dist/index");
-var index_2 = __importDefault(require("../packages/leveldb-store/dist/index"));
-var index_3 = __importDefault(require("../packages/websocket-network/dist/index"));
-var index_4 = __importDefault(require("../packages/web3-user/dist/index"));
-var nodeA;
-var nodeB;
-var Alice;
-var Bob;
-var Chris;
+const index_1 = require("../packages/tool-db/dist/index");
+const index_2 = __importDefault(require("../packages/leveldb-store/dist/index"));
+const index_3 = __importDefault(require("../packages/websocket-network/dist/index"));
+const index_4 = __importDefault(require("../packages/web3-user/dist/index"));
+let nodeA;
+let nodeB;
+let Alice;
+let Bob;
+let Chris;
 nodeA = new index_1.ToolDb({
     server: true,
     host: "127.0.0.1",
@@ -21,7 +21,8 @@ nodeA = new index_1.ToolDb({
 });
 nodeA.onConnect = () => checkIfOk(nodeA.peerAccount.getAddress() || "");
 nodeA.addServerFunction("test", (args) => {
-    var a = args[0], b = args[1];
+    const a = args[0];
+    const b = args[1];
     if (typeof a !== "number" || typeof b !== "number") {
         throw new Error("Invalid arguments");
     }
@@ -70,8 +71,8 @@ Chris = new index_1.ToolDb({
     userAdapter: index_4.default,
 });
 Chris.onConnect = () => checkIfOk(Chris.peerAccount.getAddress() || "");
-var connected = [];
-var checkIfOk = (id) => {
+const connected = [];
+const checkIfOk = (id) => {
     if (!connected.includes(id)) {
         connected.push(id);
         if (connected.length === 4) {
@@ -80,8 +81,8 @@ var checkIfOk = (id) => {
     }
 };
 setTimeout(() => {
-    var testKey = "test-key-" + (0, index_1.textRandom)(16);
-    var testValue = "Awesome value";
+    const testKey = `test-key-${(0, index_1.textRandom)(16)}`;
+    const testValue = "Awesome value";
     Alice.putData(testKey, testValue).then((msg) => {
         expect(msg).toBeDefined();
         setTimeout(() => {

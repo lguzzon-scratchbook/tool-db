@@ -25,7 +25,7 @@ afterAll((done) => {
 
 it("Can write and read inmediately", (done) => {
   setTimeout(() => {
-    const testKey = "io-test-" + textRandom(16);
+    const testKey = `io-test-${textRandom(16)}`;
     const testValue = textRandom(24);
 
     Alice.store.put(testKey, testValue).finally(() => {

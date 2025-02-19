@@ -1,5 +1,5 @@
 import * as yargs from "yargs";
-import * as repl from "repl";
+import * as repl from "node:repl";
 import { ToolDb } from "tool-db";
 import { readKey } from "./get";
 import { put } from "./put";
@@ -55,7 +55,7 @@ yargs
             },
         },
         handler: async (argv) => {
-            const urls = argv["peers"] ? (argv["peers"] as string).split(",") : [];
+            const urls = argv.peers ? (argv.peers as string).split(",") : [];
             const peers = urls.map((u) => {
                 const [host, port] = u.split(":");
                 return {
@@ -64,18 +64,18 @@ yargs
                 };
             });
             const tooldb = await serve({
-                db: argv["db"] as string,
-                storageName: argv["storageName"] as string,
-                watch: argv["watch"] ? (argv["watch"] as string).split(",") : [],
+                db: argv.db as string,
+                storageName: argv.storageName as string,
+                watch: argv.watch ? (argv.watch as string).split(",") : [],
                 peers,
-                host: argv["host"] as string,
-                port: argv["port"] as number,
+                host: argv.host as string,
+                port: argv.port as number,
                 // certs: argv["certs"] as (string | undefined),
-                debug: argv["debug"] as boolean,
+                debug: argv.debug as boolean,
             });
-            if (argv["repl"] === true) {
+            if (argv.repl === true) {
                 const r = repl.start("> ");
-                r.context["tooldb"] = tooldb;
+                r.context.tooldb = tooldb;
             }
         },
     })
@@ -98,7 +98,7 @@ yargs
             },
         },
         handler: async (argv) => {
-            const urls = argv["peers"] ? (argv["peers"] as string).split(",") : [];
+            const urls = argv.peers ? (argv.peers as string).split(",") : [];
             const peers = urls.map((u) => {
                 const [host, port] = u.split(":");
                 return {
@@ -107,8 +107,8 @@ yargs
                 };
             });
             await readKey({
-                db: argv["db"] as string,
-                storageName: argv["storageName"] as string,
+                db: argv.db as string,
+                storageName: argv.storageName as string,
                 key: argv._[1] as string,
                 peers,
             });
@@ -133,7 +133,7 @@ yargs
             },
         },
         handler: async (argv) => {
-            const urls = argv["peers"] ? (argv["peers"] as string).split(",") : [];
+            const urls = argv.peers ? (argv.peers as string).split(",") : [];
             const peers = urls.map((u) => {
                 const [host, port] = u.split(":");
                 return {
@@ -142,8 +142,8 @@ yargs
                 };
             });
             await put({
-                db: argv["db"] as string,
-                storageName: argv["storageName"] as string,
+                db: argv.db as string,
+                storageName: argv.storageName as string,
                 key: argv._[1] as string,
                 value: argv._[2] as string,
                 peers,

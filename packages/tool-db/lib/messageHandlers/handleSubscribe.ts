@@ -5,7 +5,7 @@ export default function handleSubscribe(
   message: SubscribeMessage,
   remotePeerId: string
 ) {
-  const subId = remotePeerId + "-" + message.key;
+  const subId = `${remotePeerId}-${message.key}`;
   if (!this.subscriptions.includes(subId)) {
     this.subscriptions.push(subId);
 

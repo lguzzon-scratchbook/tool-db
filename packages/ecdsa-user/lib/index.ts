@@ -38,11 +38,11 @@ export default class ToolDbEcdsaUser extends ToolDbUserAdapter {
     super(db);
 
     // eslint-disable-next-line global-require
-    global.Buffer = global.Buffer || require("buffer").Buffer;
+    global.Buffer = global.Buffer || require("node:buffer").Buffer;
 
     if (typeof window === "undefined") {
       // eslint-disable-next-line global-require
-      global.crypto = require("crypto").webcrypto;
+      global.crypto = require("node:crypto").webcrypto;
     }
 
     this.anonUser();
@@ -91,7 +91,7 @@ export default class ToolDbEcdsaUser extends ToolDbUserAdapter {
       this._keys.privateKey as CryptoKey
     );
 
-    delete jwkPrivate.d;
+    jwkPrivate.d = undefined;
     jwkPrivate.key_ops = ["verify"];
 
     const reimportedPubkey = await crypto.subtle.importKey(

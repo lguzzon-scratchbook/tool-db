@@ -105,7 +105,7 @@ export default class ToolDbHybrid extends ToolDbNetworkAdapter {
   private makeSocket = (url: string) => {
     return new Promise<WebSocket | null>((resolve) => {
       if (!this.sockets[url]) {
-        this.tooldb.logger("begin tracker connection " + url);
+        this.tooldb.logger(`begin tracker connection ${url}`);
 
         this.socketListeners[url] = this.onSocketMessage;
 
@@ -186,7 +186,7 @@ export default class ToolDbHybrid extends ToolDbNetworkAdapter {
   private announceAll = async () => {
     const infoHash = sha256(this.tooldb.options.serverName || "").slice(-20);
 
-    this.tooldb.logger(`announce all start`);
+    this.tooldb.logger('announce all start');
     this.tooldb.logger(this.trackerUrls);
     const delayPerTracker = (announceSecs * 1000) / this.trackerUrls.length;
 
@@ -248,7 +248,7 @@ export default class ToolDbHybrid extends ToolDbNetworkAdapter {
       val = JSON.parse(e.data);
       // this.tooldb.logger("onSocketMessage", socket.url, val);
     } catch (_e: any) {
-      this.tooldb.logger(`Received malformed JSON`, e.data);
+      this.tooldb.logger('Received malformed JSON', e.data);
       return;
     }
 
@@ -347,8 +347,8 @@ export default class ToolDbHybrid extends ToolDbNetworkAdapter {
     this.tooldb.logger("connectTo:", serverPeer);
     try {
       const wsUrl = serverPeer.ssl
-        ? "wss://" + serverPeer.host
-        : "ws://" + serverPeer.host + ":" + serverPeer.port;
+        ? `wss://${serverPeer.host}`
+        : `ws://${serverPeer.host}:${serverPeer.port}`;
 
       const wss = new this.wss(wsUrl);
       let clientId = serverPeer.pubKey;
