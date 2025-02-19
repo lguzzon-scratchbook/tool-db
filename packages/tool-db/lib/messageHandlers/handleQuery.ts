@@ -1,4 +1,4 @@
-import { ToolDb, QueryAckMessage, QueryMessage } from "..";
+import type { ToolDb, QueryAckMessage, QueryMessage } from "..";
 
 export default function handleQuery(
   this: ToolDb,

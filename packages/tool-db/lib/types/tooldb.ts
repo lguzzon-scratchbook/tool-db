@@ -1,7 +1,7 @@
-import { Server as HTTPServer } from "http";
-import { Server as HTTPSServer } from "https";
+import type { Server as HTTPServer } from "http";
+import type { Server as HTTPSServer } from "https";
 
-import {
+import type {
   ToolDb,
   ToolDbMessage,
   ToolDbNetworkAdapter,

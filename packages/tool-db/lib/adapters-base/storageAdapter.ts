@@ -1,4 +1,4 @@
-import { ToolDb } from "..";
+import type { ToolDb } from "..";
 
 export default class ToolDbStorageAdapter {
   private _tooldb: ToolDb;

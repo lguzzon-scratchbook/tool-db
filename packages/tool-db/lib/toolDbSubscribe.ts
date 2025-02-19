@@ -1,4 +1,4 @@
-import { ToolDb, textRandom } from ".";
+import { type ToolDb, textRandom } from ".";
 
 /**
  * Subscribe to all PUT updates for this key.

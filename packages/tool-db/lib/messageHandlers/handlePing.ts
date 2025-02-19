@@ -1,4 +1,4 @@
-import { ToolDb, verifyPeer, PingMessage, PongMessage } from "..";
+import { type ToolDb, verifyPeer, type PingMessage, type PongMessage } from "..";
 
 export default function handlePing(
   this: ToolDb,

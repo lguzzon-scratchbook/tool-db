@@ -1,9 +1,9 @@
 import {
-  AllowedFunctionArguments,
-  FunctionReturn,
-  GenericObject,
+  type AllowedFunctionArguments,
+  type FunctionReturn,
+  type GenericObject,
   textRandom,
-  ToolDb,
+  type ToolDb,
 } from ".";
 
 /**

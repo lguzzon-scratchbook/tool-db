@@ -1,4 +1,4 @@
-import { CounterCrdt } from "../packages/tool-db";
+import { CounterCrdt } from "tool-db";
 
 it("Can add separately", () => {
   const Alice = new CounterCrdt("Alice");

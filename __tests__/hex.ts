@@ -2,7 +2,7 @@ import {
   hexToString,
   stringToArrayBuffer,
   arrayBufferToHex,
-} from "../packages/tool-db";
+} from "tool-db";
 
 it("Converts hex to string", () => {
   expect(hexToString("536f6d6556657279546573742d7956616c756532")).toEqual(

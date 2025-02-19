@@ -1,4 +1,4 @@
-import { ToolDb, CrdtGetMessage, CrdtPutMessage } from "..";
+import type { ToolDb, CrdtGetMessage, CrdtPutMessage } from "..";
 
 export default function handleCrdtGet(
   this: ToolDb,

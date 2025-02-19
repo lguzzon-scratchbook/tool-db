@@ -1,10 +1,10 @@
 import {
-  ToolDb,
-  CrdtPutMessage,
+  type ToolDb,
+  type CrdtPutMessage,
   textRandom,
-  VerificationData,
+  type VerificationData,
   proofOfWork,
-  BaseCrdt,
+  type BaseCrdt,
 } from ".";
 
 /**

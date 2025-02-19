@@ -1,4 +1,4 @@
-import { ToolDbUserAdapter, sha256 } from "..";
+import { type ToolDbUserAdapter, sha256 } from "..";
 
 export default function getPeerSignature(
   account: ToolDbUserAdapter,

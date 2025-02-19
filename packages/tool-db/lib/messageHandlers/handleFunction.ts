@@ -1,4 +1,4 @@
-import { FunctionMessage, FunctionReturnMessage, ToolDb } from "..";
+import type { FunctionMessage, FunctionReturnMessage, ToolDb } from "..";
 
 export default function handleFunction(
   this: ToolDb,

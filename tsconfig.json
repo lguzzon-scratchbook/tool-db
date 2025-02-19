@@ -80,8 +80,8 @@
     }
   },
   "exclude": [
-    "__tests__/**",
-    "__tests__",
+    "_tests_bun/**",
+    "_tests_bun",
     "__mocks__"
   ]
 }

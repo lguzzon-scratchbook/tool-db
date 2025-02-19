@@ -40,7 +40,7 @@ export class ListCrdt<T> extends BaseCrdt<T, ListChanges<T>, T[]> {
 
   public _tempValues: ListTempCursor<T>[] = [];
 
-  private _lastUpdateSize: number = 0;
+  private _lastUpdateSize = 0;
 
   constructor(author: string, changes?: ListChanges<T>[]) {
     super();

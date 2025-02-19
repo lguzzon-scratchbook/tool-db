@@ -1,8 +1,8 @@
 import {
-  ToolDb,
-  PutMessage,
+  type ToolDb,
+  type PutMessage,
   textRandom,
-  VerificationData,
+  type VerificationData,
   proofOfWork,
 } from ".";
 

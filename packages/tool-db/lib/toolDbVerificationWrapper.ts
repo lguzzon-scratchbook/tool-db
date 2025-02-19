@@ -1,4 +1,4 @@
-import { ToolDb, VerificationData, VerifyResult } from ".";
+import { type ToolDb, type VerificationData, VerifyResult } from ".";
 
 export default function toolDbVerificationWrapper(
   this: ToolDb,

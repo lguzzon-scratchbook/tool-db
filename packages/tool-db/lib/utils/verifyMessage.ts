@@ -1,4 +1,4 @@
-import { ToolDb, VerifyResult, VerificationData, sha256 } from "..";
+import { type ToolDb, VerifyResult, type VerificationData, sha256 } from "..";
 
 /**
  * Verifies a message validity (PoW, Address, timestamp, signatures)

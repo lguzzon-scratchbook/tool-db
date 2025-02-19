@@ -1,7 +1,7 @@
 import Peer from "simple-peer";
 import WebSocket from "ws";
 
-import { ToolDb, sha1, textRandom, ToolDbNetworkAdapter } from "tool-db";
+import { type ToolDb, sha1, textRandom, ToolDbNetworkAdapter } from "tool-db";
 
 type SocketMessageFn = (socket: WebSocket, e: { data: any }) => void;
 

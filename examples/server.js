@@ -1,7 +1,5 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+
+var __importDefault = (this && this.__importDefault) || ((mod) => (mod && mod.__esModule) ? mod : { "default": mod });
 Object.defineProperty(exports, "__esModule", { value: true });
 var index_1 = require("../packages/tool-db/dist/index");
 var index_2 = __importDefault(require("../packages/leveldb-store/dist/index"));
@@ -21,14 +19,14 @@ nodeA = new index_1.ToolDb({
     networkAdapter: index_3.default,
     userAdapter: index_4.default,
 });
-nodeA.onConnect = function () { return checkIfOk(nodeA.peerAccount.getAddress() || ""); };
-nodeA.addServerFunction("test", function (args) {
+nodeA.onConnect = () => checkIfOk(nodeA.peerAccount.getAddress() || "");
+nodeA.addServerFunction("test", (args) => {
     var a = args[0], b = args[1];
     if (typeof a !== "number" || typeof b !== "number") {
         throw new Error("Invalid arguments");
     }
-    return new Promise(function (resolve) {
-        setTimeout(function () {
+    return new Promise((resolve) => {
+        setTimeout(() => {
             resolve(a + b);
         }, 1000);
     });
@@ -44,7 +42,7 @@ nodeB = new index_1.ToolDb({
     networkAdapter: index_3.default,
     userAdapter: index_4.default,
 });
-nodeB.onConnect = function () { return checkIfOk(nodeB.peerAccount.getAddress() || ""); };
+nodeB.onConnect = () => checkIfOk(nodeB.peerAccount.getAddress() || "");
 Alice = new index_1.ToolDb({
     server: false,
     peers: [{ host: "localhost", port: 9000 }],
@@ -53,7 +51,7 @@ Alice = new index_1.ToolDb({
     networkAdapter: index_3.default,
     userAdapter: index_4.default,
 });
-Alice.onConnect = function () { return checkIfOk(Alice.peerAccount.getAddress() || ""); };
+Alice.onConnect = () => checkIfOk(Alice.peerAccount.getAddress() || "");
 Bob = new index_1.ToolDb({
     server: false,
     peers: [{ host: "localhost", port: 8000 }],
@@ -62,7 +60,7 @@ Bob = new index_1.ToolDb({
     networkAdapter: index_3.default,
     userAdapter: index_4.default,
 });
-Bob.onConnect = function () { return checkIfOk(Bob.peerAccount.getAddress() || ""); };
+Bob.onConnect = () => checkIfOk(Bob.peerAccount.getAddress() || "");
 Chris = new index_1.ToolDb({
     server: false,
     peers: [{ host: "localhost", port: 9000 }],
@@ -71,9 +69,9 @@ Chris = new index_1.ToolDb({
     networkAdapter: index_3.default,
     userAdapter: index_4.default,
 });
-Chris.onConnect = function () { return checkIfOk(Chris.peerAccount.getAddress() || ""); };
+Chris.onConnect = () => checkIfOk(Chris.peerAccount.getAddress() || "");
 var connected = [];
-var checkIfOk = function (id) {
+var checkIfOk = (id) => {
     if (!connected.includes(id)) {
         connected.push(id);
         if (connected.length === 4) {
@@ -81,17 +79,17 @@ var checkIfOk = function (id) {
         }
     }
 };
-setTimeout(function () {
+setTimeout(() => {
     var testKey = "test-key-" + (0, index_1.textRandom)(16);
     var testValue = "Awesome value";
-    Alice.putData(testKey, testValue).then(function (msg) {
+    Alice.putData(testKey, testValue).then((msg) => {
         expect(msg).toBeDefined();
-        setTimeout(function () {
-            Bob.getData(testKey).then(function (data) {
+        setTimeout(() => {
+            Bob.getData(testKey).then((data) => {
                 expect(data).toBe(testValue);
             });
         }, 1000);
     });
 }, 500);
-setTimeout(function () {
+setTimeout(() => {
 }, 5000);

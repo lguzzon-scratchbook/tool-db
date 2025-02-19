@@ -5,7 +5,7 @@ export default function hexToArrayBuffer(hex: string): ArrayBuffer {
 
   // convert the octets to integers
   const integers = pairs.map((s) => {
-    return parseInt(s, 16);
+    return Number.parseInt(s, 16);
   });
 
   const array = new Uint8Array(integers);

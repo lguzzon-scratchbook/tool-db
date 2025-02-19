@@ -1,4 +1,4 @@
-import { ToolDb, ToolDbStorageAdapter } from "tool-db";
+import { type ToolDb, ToolDbStorageAdapter } from "tool-db";
 import level from "level";
 
 export default class ToolDbLeveldb extends ToolDbStorageAdapter {

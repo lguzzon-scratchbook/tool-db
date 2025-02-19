@@ -1,11 +1,11 @@
 import WebSocket from "ws";
 
 import {
-  ToolDb,
+  type ToolDb,
   textRandom,
   ToolDbNetworkAdapter,
   sha256,
-  ToolDbMessage,
+  type ToolDbMessage,
 } from "tool-db";
 
 type SocketMessageFn = (socket: WebSocket, e: { data: any }) => void;
@@ -290,15 +290,13 @@ export default class ToolDbHybrid extends ToolDbNetworkAdapter {
     setInterval(() => {
       this.tryExecuteMessageQueue();
     }, 500);
-
-    const _this = this;
-    setTimeout(function () {
-      if (_this.tooldb.options.server) {
-        _this.announceInterval = setInterval(
-          _this.announceAll,
+    setTimeout(() => {
+      if (this.tooldb.options.server) {
+        this.announceInterval = setInterval(
+          this.announceAll,
           announceSecs * 1000
         );
-        _this.announceAll();
+        this.announceAll();
       }
     }, 500);
 

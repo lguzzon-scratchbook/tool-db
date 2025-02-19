@@ -1,4 +1,4 @@
-import { sha1 } from "../packages/tool-db";
+import { sha1 } from "tool-db";
 
 it("Hashes with sha1/hex", () => {
   const TestValue = "SomeVeryTest-yValue2";

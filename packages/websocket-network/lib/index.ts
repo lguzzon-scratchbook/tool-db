@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 
-import { ToolDb, textRandom, ToolDbNetworkAdapter } from "tool-db";
+import { type ToolDb, textRandom, ToolDbNetworkAdapter } from "tool-db";
 
 interface ConnectionAwaiting {
   socket: WebSocket;

@@ -1,4 +1,4 @@
-import { ToolDb, ToolDbStorageAdapter } from "tool-db";
+import { type ToolDb, ToolDbStorageAdapter } from "tool-db";
 import { createClient } from "redis";
 
 export default class toolDbRedis extends ToolDbStorageAdapter {

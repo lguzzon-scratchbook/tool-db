@@ -1,8 +1,8 @@
 import {
-  ToolDb,
-  PingMessage,
-  ToolDbMessage,
-  Peer,
+  type ToolDb,
+  type PingMessage,
+  type ToolDbMessage,
+  type Peer,
   getPeerSignature,
   textRandom,
   uniq,

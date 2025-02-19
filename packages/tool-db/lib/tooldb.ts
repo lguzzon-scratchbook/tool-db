@@ -1,16 +1,16 @@
 import EventEmitter from "events";
 
 import {
-  Peer,
+  type Peer,
   randomAnimal,
-  ServerFunction,
-  ToolDbOptions,
+  type ServerFunction,
+  type ToolDbOptions,
   ToolDbNetworkAdapter,
   ToolDbStorageAdapter,
   ToolDbUserAdapter,
-  ToolDbMessage,
+  type ToolDbMessage,
   verifyMessage,
-  VerificationData,
+  type VerificationData,
 } from ".";
 
 import toolDbGet from "./toolDbGet";

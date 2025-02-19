@@ -1,16 +1,16 @@
 import {
-  Peer,
+  type Peer,
   ToolDb,
-  VerificationData,
+  type VerificationData,
   catchReturn,
   VerifyResult,
   getPeerSignature,
   verifyPeer,
-} from "../packages/tool-db";
+} from "tool-db";
 
-import ToolDbLeveldb from "../packages/leveldb-store";
-import ToolDbWebsockets from "../packages/websocket-network";
-import ToolDbWeb3 from "../packages/web3-user";
+import ToolDbLeveldb from "../packages/leveldb-store/dist";
+import ToolDbWebsockets from "../packages/websocket-network/dist";
+import ToolDbWeb3 from "../packages/web3-user/dist";
 
 jest.setTimeout(10000);
 

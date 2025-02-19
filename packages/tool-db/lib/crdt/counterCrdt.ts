@@ -26,9 +26,9 @@ export class CounterCrdt<T> extends BaseCrdt<number, CounterChanges, number> {
 
   private _author = "";
 
-  private _value: number = 0;
+  private _value = 0;
 
-  private _lastUpdateSize: number = 0;
+  private _lastUpdateSize = 0;
 
   constructor(author: string, changes?: CounterChanges[]) {
     super();
@@ -47,7 +47,7 @@ export class CounterCrdt<T> extends BaseCrdt<number, CounterChanges, number> {
   }
 
   calculate() {
-    let temp: number = 0;
+    let temp = 0;
     // Only update if we have new changes
     if (Object.values(this._changes).length !== this._lastUpdateSize) {
       this._changes.sort(this.changesSort).forEach((change) => {

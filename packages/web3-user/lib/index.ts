@@ -1,14 +1,14 @@
 
 import {
-  ToolDb,
-  VerificationData,
+  type ToolDb,
+  type VerificationData,
   ToolDbUserAdapter,
   randomAnimal,
 } from "tool-db";
 
 import w3 from "web3";
 import { KeyStore } from "web3";
-import { Web3Account } from "web3-eth-accounts";
+import type { Web3Account } from "web3-eth-accounts";
 
 export default class ToolDbWeb3User extends ToolDbUserAdapter {
   public web3: w3;

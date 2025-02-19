@@ -1,4 +1,4 @@
-import { ToolDb, verifyPeer, PongMessage } from "..";
+import { type ToolDb, verifyPeer, type PongMessage } from "..";
 
 export default function handlePong(
   this: ToolDb,

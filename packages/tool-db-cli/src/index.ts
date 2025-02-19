@@ -60,7 +60,7 @@ yargs
                 const [host, port] = u.split(":");
                 return {
                     host,
-                    port: parseInt(port),
+                    port: Number.parseInt(port),
                 };
             });
             const tooldb = await serve({
@@ -103,7 +103,7 @@ yargs
                 const [host, port] = u.split(":");
                 return {
                     host,
-                    port: parseInt(port),
+                    port: Number.parseInt(port),
                 };
             });
             await readKey({
@@ -138,7 +138,7 @@ yargs
                 const [host, port] = u.split(":");
                 return {
                     host,
-                    port: parseInt(port),
+                    port: Number.parseInt(port),
                 };
             });
             await put({

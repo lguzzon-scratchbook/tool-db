@@ -1,4 +1,4 @@
-import { ToolDb, VerificationData } from "..";
+import type { ToolDb, VerificationData } from "..";
 
 export default class ToolDbUserAdapter {
   private _tooldb: ToolDb;

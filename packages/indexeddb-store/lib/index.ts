@@ -1,4 +1,4 @@
-import { ToolDb, ToolDbStorageAdapter } from "tool-db";
+import { type ToolDb, ToolDbStorageAdapter } from "tool-db";
 
 export default class ToolDbIndexedb extends ToolDbStorageAdapter {
   private database: IDBDatabase | undefined;
@@ -98,7 +98,7 @@ export default class ToolDbIndexedb extends ToolDbStorageAdapter {
         const obj = tx.objectStore(this.storageName);
 
         const keysArray: string[] = [];
-        obj.openCursor(keyRange).onsuccess = function (event: any) {
+        obj.openCursor(keyRange).onsuccess = (event: any) => {
           const cursor = event.target.result;
           if (cursor) {
             keysArray.push(event.target.result.key);

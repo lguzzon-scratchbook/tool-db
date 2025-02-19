@@ -1,4 +1,4 @@
-import { ListCrdt } from "../packages/tool-db";
+import { ListCrdt } from "tool-db";
 
 it("Can do continnuous test", () => {
   const Alice = new ListCrdt<string>("Alice");

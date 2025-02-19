@@ -31,7 +31,7 @@ export class MapCrdt<T> extends BaseCrdt<T, MapChanges<T>, Record<string, T>> {
 
   private _keyIndex: Record<string, number> = {};
 
-  private _lastUpdateSize: number = 0;
+  private _lastUpdateSize = 0;
 
   constructor(author: string, changes?: MapChanges<T>[]) {
     super();

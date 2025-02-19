@@ -1,17 +1,17 @@
 import {
-  ToolDb,
+  type ToolDb,
   VerifyResult,
-  CrdtPutMessage,
-  VerificationData,
+  type CrdtPutMessage,
+  type VerificationData,
   MapCrdt,
-  MapChanges,
+  type MapChanges,
   CRDT_COUNTER,
   CRDT_LIST,
   CRDT_MAP,
   ListCrdt,
-  ListChanges,
+  type ListChanges,
   CounterCrdt,
-  CounterChanges,
+  type CounterChanges,
 } from "..";
 
 import toolDbVerificationWrapper from "../toolDbVerificationWrapper";

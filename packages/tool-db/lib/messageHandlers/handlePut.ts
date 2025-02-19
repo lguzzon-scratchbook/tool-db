@@ -1,4 +1,4 @@
-import { ToolDb, PutMessage, VerifyResult } from "..";
+import { type ToolDb, type PutMessage, VerifyResult } from "..";
 
 import toolDbVerificationWrapper from "../toolDbVerificationWrapper";
 

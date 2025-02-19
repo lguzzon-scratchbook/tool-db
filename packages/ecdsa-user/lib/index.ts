@@ -1,9 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import {
   randomAnimal,
-  ToolDb,
+  type ToolDb,
   ToolDbUserAdapter,
-  VerificationData,
+  type VerificationData,
 } from "tool-db";
 
 import arrayBufferToHex from "./utils/arrayBufferToHex";
@@ -23,7 +23,7 @@ import exportKey from "./crypto/exportKey";
 import importKey from "./crypto/importKey";
 import signData from "./crypto/signData";
 
-import { ECDSAUser, EncryptedUserdata, HexedKeys } from "./types";
+import type { ECDSAUser, EncryptedUserdata, HexedKeys } from "./types";
 
 const PUBKEY_PREFIX = "3059301306072a8648ce3d020106082a8648ce3d03010703420004";
 

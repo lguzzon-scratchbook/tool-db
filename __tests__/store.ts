@@ -1,8 +1,8 @@
-import { textRandom, ToolDb } from "../packages/tool-db";
+import { textRandom, ToolDb } from "tool-db";
 
-import ToolDbLeveldb from "../packages/leveldb-store";
-import ToolDbWebsockets from "../packages/websocket-network";
-import ToolDbWeb3 from "../packages/web3-user";
+import ToolDbLeveldb from "../packages/leveldb-store/dist";
+import ToolDbWebsockets from "../packages/websocket-network/dist";
+import ToolDbWeb3 from "../packages/web3-user/dist";
 
 let Alice: ToolDb;
 

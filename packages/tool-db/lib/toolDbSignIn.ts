@@ -1,4 +1,4 @@
-import { ToolDb, sha256, randomAnimal } from ".";
+import { type ToolDb, sha256, randomAnimal } from ".";
 
 export default function toolDbSignIn(
   this: ToolDb,

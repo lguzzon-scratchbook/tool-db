@@ -38,10 +38,10 @@
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "lerna run build --include-dependencies",
+    "build": "lerna run build --include-dependencies --ignore tool-db-cli",
     "clean": "lerna run --parallel clean",
     "clean:all": "(rm -rf /tmp/jest_* || true) && (rm -rf _____peer_test-* || true) && (rm -rf test-* || true) && (rm -rf coverage) && npm run clean",
-    "lint:fix": "lint:fix:biome",
+    "lint:fix": "bun lint:fix:biome",
     "lint:fix:biome": "bun lint:tool:biome --write",
     "lint:fix:biome:unsafe": "bun lint:fix:biome --unsafe",
     "lint:tool:biome": "biome lint",

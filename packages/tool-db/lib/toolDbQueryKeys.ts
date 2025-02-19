@@ -1,4 +1,4 @@
-import { ToolDb, textRandom, uniq } from ".";
+import { type ToolDb, textRandom, uniq } from ".";
 
 /**
  * Triggers a QUERY request to other peers.
@@ -27,7 +27,7 @@ export default function toolDbQueryKeys(
     let foundKeys: string[] = [];
     let timeout: NodeJS.Timeout | undefined;
 
-    let gotLocalKeys = false;
+    const gotLocalKeys = false;
 
     this.store
       .query(finalKey)
