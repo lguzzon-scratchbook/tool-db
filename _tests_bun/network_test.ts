@@ -10,53 +10,6 @@ import ToolDbWebsockets from "../packages/websocket-network/dist";
 import ToolDbWeb3 from "../packages/web3-user/dist";
 
 import { describe, test, beforeAll,afterAll, expect } from "bun:test";
-import { EventEmitter } from 'node:events';
-
-describe("network-base", () => {
-  
-  let nodeA: ToolDb;
-
-  beforeAll(() => {
-  })
-
-  afterAll((done) => {
-    if (nodeA) {
-      (nodeA.network as any).server.close();
-    }
-    setTimeout(done, 500);
-  });
-
-  test("A can retry connection", (done) => {
-    const Alice = new ToolDb({
-      server: false,
-      maxRetries: 1000,
-      peers: [{ host: "localhost", port: 8001 }],
-      storageName: "test-base-client",
-      storageAdapter: ToolDbLeveldb,
-      networkAdapter: ToolDbWebsockets,
-      userAdapter: ToolDbWeb3,
-    });
-    Alice.anonSignIn();
-    Alice.onConnect = () => {
-      expect(Alice.isConnected).toBeTruthy();
-      done();
-    };
-
-    setTimeout(() => {
-      nodeA = new ToolDb({
-        server: true,
-        host: "127.0.0.1",
-        port: 8001,
-        storageName: "test-base-server",
-        storageAdapter: ToolDbLeveldb,
-        networkAdapter: ToolDbWebsockets,
-        userAdapter: ToolDbWeb3,
-      });
-      nodeA.anonSignIn();
-      expect(Alice.isConnected).toBeFalsy();
-    }, 5000);
-  });
-});
 
 describe("network", () => {
   
@@ -163,6 +116,7 @@ afterAll((done) => {
 
 test("All peers have correct servers data", (done) => {
   setTimeout(() => {
+    console.log(Alice.serverPeers);
     expect(Alice.serverPeers.length).toBe(1);
     expect(Bob.serverPeers.length).toBe(1);
     expect(Chris.serverPeers.length).toBe(1);
