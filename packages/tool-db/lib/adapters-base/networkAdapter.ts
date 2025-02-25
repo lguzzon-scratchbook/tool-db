@@ -5,44 +5,44 @@ import {
   type Peer,
   getPeerSignature,
   textRandom,
-  uniq,
-} from "..";
+  uniq
+} from '..'
 
 export default class ToolDbNetworkAdapter {
-  private _clientToSend: Record<string, (message: string) => void> = {};
+  private _clientToSend: Record<string, (message: string) => void> = {}
 
-  private _isClientConnected: Record<string, () => boolean> = {};
+  private _isClientConnected: Record<string, () => boolean> = {}
 
-  private _clientIsServer: Record<string, boolean> = {};
+  private _clientIsServer: Record<string, boolean> = {}
 
-  private _tooldb: ToolDb;
+  private _tooldb: ToolDb
 
   constructor(db: ToolDb) {
-    this._tooldb = db;
+    this._tooldb = db
 
     setTimeout(() => {
       if (this.tooldb.options.server) {
         this.getMeAsPeer().then((meAsPeer) => {
-          this.tooldb.serverPeers.push(meAsPeer);
-        });
+          this.tooldb.serverPeers.push(meAsPeer)
+        })
       }
-    }, 100);
+    }, 100)
   }
 
   get clientToSend() {
-    return this._clientToSend;
+    return this._clientToSend
   }
 
   get isClientConnected() {
-    return this._isClientConnected;
+    return this._isClientConnected
   }
 
   get tooldb() {
-    return this._tooldb;
+    return this._tooldb
   }
 
   public getMeAsPeer() {
-    const timestamp = new Date().getTime();
+    const timestamp = new Date().getTime()
     return getPeerSignature(
       this.tooldb.peerAccount,
       this.tooldb.options.topic,
@@ -55,10 +55,10 @@ export default class ToolDbNetworkAdapter {
         timestamp: timestamp,
         host: this.tooldb.options.host,
         port: this.tooldb.options.port,
-        address: this.tooldb.peerAccount.getAddress() || "",
-        sig: signature,
-      } as Peer;
-    });
+        address: this.tooldb.peerAccount.getAddress() || '',
+        sig: signature
+      } as Peer
+    })
   }
 
   /**
@@ -69,7 +69,7 @@ export default class ToolDbNetworkAdapter {
   public isConnected(clientId: string) {
     return this._isClientConnected[clientId]
       ? this._isClientConnected[clientId]()
-      : false;
+      : false
   }
 
   /**
@@ -78,20 +78,20 @@ export default class ToolDbNetworkAdapter {
    * @returns boolean
    */
   public isServer(clientId: string) {
-    return this._clientIsServer[clientId] || false;
+    return this._clientIsServer[clientId] || false
   }
 
   public craftPingMessage() {
     return this.getMeAsPeer().then((meAsPeer) => {
       return JSON.stringify({
-        type: "ping",
+        type: 'ping',
         clientId: this.getClientAddress(),
         to: [this.getClientAddress()],
         isServer: this.tooldb.options.server,
         id: textRandom(10),
-        peer: meAsPeer,
-      } as PingMessage);
-    });
+        peer: meAsPeer
+      } as PingMessage)
+    })
   }
 
   /**
@@ -101,7 +101,7 @@ export default class ToolDbNetworkAdapter {
    */
   private executeSendToClient(clientId: string, message: string) {
     if (this._clientToSend[clientId]) {
-      this._clientToSend[clientId](message);
+      this._clientToSend[clientId](message)
     }
   }
 
@@ -109,12 +109,12 @@ export default class ToolDbNetworkAdapter {
     // This is not a good idea to use on all adapters, so it should be replaced
     // if its causing issues. The only reason we use the last 20 chars is to
     // muse the same peer address as the webrtc adapter.
-    return (this.tooldb.peerAccount.getAddress() || "").slice(-20);
+    return (this.tooldb.peerAccount.getAddress() || '').slice(-20)
   }
 
   public onClientDisconnect(clientId: string) {
-    delete this._clientToSend[clientId];
-    delete this._clientIsServer[clientId];
+    delete this._clientToSend[clientId]
+    delete this._clientIsServer[clientId]
   }
 
   /**
@@ -133,26 +133,26 @@ export default class ToolDbNetworkAdapter {
     // this.tooldb.logger("onClientMessage", clientId);
 
     if (clientId && !this.tooldb.processedOutHashes[clientId]) {
-      this.tooldb.processedOutHashes[clientId] = [];
+      this.tooldb.processedOutHashes[clientId] = []
     }
 
     try {
-      const parsedMessage = JSON.parse(message) as ToolDbMessage;
+      const parsedMessage = JSON.parse(message) as ToolDbMessage
       // We assume the first messages to arrive will always be ping or pong.
       // Only after that we can get the client id for this socket.
-      if (parsedMessage.type === "ping" || parsedMessage.type === "pong") {
-        const cid = parsedMessage.clientId;
-        setClientId(cid);
-        this.tooldb.onPeerConnect(cid);
-        this._clientIsServer[cid] = parsedMessage.isServer;
-        this.tooldb.processedOutHashes[cid] = [];
-        this.tooldb.clientOnMessage(parsedMessage, cid);
+      if (parsedMessage.type === 'ping' || parsedMessage.type === 'pong') {
+        const cid = parsedMessage.clientId
+        setClientId(cid)
+        this.tooldb.onPeerConnect(cid)
+        this._clientIsServer[cid] = parsedMessage.isServer
+        this.tooldb.processedOutHashes[cid] = []
+        this.tooldb.clientOnMessage(parsedMessage, cid)
       } else if (clientId) {
-        this.tooldb.clientOnMessage(parsedMessage, clientId);
+        this.tooldb.clientOnMessage(parsedMessage, clientId)
       }
     } catch (e) {
-      this.tooldb.logger("Got message ERR", message);
-      this.tooldb.logger(e);
+      this.tooldb.logger('Got message ERR', message)
+      this.tooldb.logger(e)
     }
   }
 
@@ -165,31 +165,31 @@ export default class ToolDbNetworkAdapter {
    * @param isRelay if we should relay this message
    */
   public sendToAll(msg: ToolDbMessage, crossServerOnly = false) {
-    const to = uniq([...msg.to, this.getClientAddress()]);
+    const to = uniq([...msg.to, this.getClientAddress()])
 
-    const finalMessage = JSON.stringify({ ...msg, to });
+    const finalMessage = JSON.stringify({ ...msg, to })
 
     const filteredConns = Object.keys(this.clientToSend)
       .filter((id) => !to.includes(id))
-      .filter((clientId) => this.isConnected(clientId));
+      .filter((clientId) => this.isConnected(clientId))
 
     filteredConns.forEach((clientId) => {
       if ((crossServerOnly && this.isServer(clientId)) || !crossServerOnly) {
-        this.tooldb.logger(to, "Sent out to:", clientId);
+        this.tooldb.logger(to, 'Sent out to:', clientId)
 
-        if (msg.type === "put" || msg.type === "crdtPut") {
+        if (msg.type === 'put' || msg.type === 'crdtPut') {
           if (!this.tooldb.processedOutHashes[clientId].includes(msg.data.h)) {
-            this.executeSendToClient(clientId, finalMessage);
-            this.tooldb.processedOutHashes[clientId].push(msg.data.h);
+            this.executeSendToClient(clientId, finalMessage)
+            this.tooldb.processedOutHashes[clientId].push(msg.data.h)
           }
         } else {
-          this.executeSendToClient(clientId, finalMessage);
+          this.executeSendToClient(clientId, finalMessage)
         }
       }
       // } else {
       //   this.tooldb.logger("Fitlered out;", clientId);
       // }
-    });
+    })
   }
 
   /**
@@ -199,19 +199,19 @@ export default class ToolDbNetworkAdapter {
    * @param msg message data
    */
   public sendToClientId(clientId: string, msg: ToolDbMessage) {
-    const to = uniq([...msg.to, this.getClientAddress()]);
-    const finalMessage = JSON.stringify({ ...msg, to });
+    const to = uniq([...msg.to, this.getClientAddress()])
+    const finalMessage = JSON.stringify({ ...msg, to })
 
-    if (msg.type === "put" || msg.type === "crdtPut") {
+    if (msg.type === 'put' || msg.type === 'crdtPut') {
       if (
         clientId &&
         !this.tooldb.processedOutHashes[clientId].includes(msg.data.h)
       ) {
-        this.executeSendToClient(clientId, finalMessage);
-        this.tooldb.processedOutHashes[clientId].push(msg.data.h);
+        this.executeSendToClient(clientId, finalMessage)
+        this.tooldb.processedOutHashes[clientId].push(msg.data.h)
       }
     } else {
-      this.executeSendToClient(clientId, finalMessage);
+      this.executeSendToClient(clientId, finalMessage)
     }
   }
 }

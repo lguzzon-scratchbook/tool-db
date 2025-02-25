@@ -1,61 +1,61 @@
-import { type ToolDb, ToolDbStorageAdapter } from "tool-db";
-import level from "level";
+import { type ToolDb, ToolDbStorageAdapter } from 'tool-db'
+import level from 'level'
 
 export default class ToolDbLeveldb extends ToolDbStorageAdapter {
-  private database;
+  private database
 
   constructor(db: ToolDb, forceStorageName?: string) {
-    super(db, forceStorageName);
+    super(db, forceStorageName)
 
-    this.database = level(this.storageName);
-    this.database.open();
+    this.database = level(this.storageName)
+    this.database.open()
   }
 
   public put(key: string, data: string) {
     return new Promise((resolve, reject) => {
       if (
         !this.database ||
-        (this.database.status !== "open" && this.database.status !== "new")
+        (this.database.status !== 'open' && this.database.status !== 'new')
       ) {
         setTimeout(() => {
-          resolve(this.put(key, data));
-        }, 5);
-        return;
+          resolve(this.put(key, data))
+        }, 5)
+        return
       }
       // console.warn(this.storageName, "put", key);
 
       this.database.put(key, data, (err: any) => {
         // this.logger("put", key, err, err?.message);
         if (err) {
-          reject(new Error("Error inserting data"));
+          reject(new Error('Error inserting data'))
         } else {
-          resolve(true);
+          resolve(true)
         }
-      });
-    });
+      })
+    })
   }
 
   public get(key: string) {
     return new Promise<string>((resolve, reject) => {
       if (
         !this.database ||
-        (this.database.status !== "open" && this.database.status !== "new")
+        (this.database.status !== 'open' && this.database.status !== 'new')
       ) {
         setTimeout(() => {
-          resolve(this.get(key));
-        }, 5);
-        return;
+          resolve(this.get(key))
+        }, 5)
+        return
       }
 
       this.database.get(key, (err: any, value: any) => {
         // this.logger("get", key, err, err?.message);
         if (err) {
-          reject(new Error("Error retrieving data"));
+          reject(new Error('Error retrieving data'))
         } else {
-          resolve(value);
+          resolve(value)
         }
-      });
-    });
+      })
+    })
   }
 
   public query(key: string) {
@@ -63,35 +63,35 @@ export default class ToolDbLeveldb extends ToolDbStorageAdapter {
     return new Promise<string[]>((resolve, reject) => {
       if (
         !this.database ||
-        (this.database.status !== "open" && this.database.status !== "new")
+        (this.database.status !== 'open' && this.database.status !== 'new')
       ) {
         setTimeout(() => {
-          resolve(this.query(key));
-        }, 5);
-        return;
+          resolve(this.query(key))
+        }, 5)
+        return
       }
 
       try {
-        const array: string[] = [];
+        const array: string[] = []
         this.database
           .createKeyStream({
             gte: key,
-            lte: `${key}\uffff`,
+            lte: `${key}\uffff`
           })
-          .on("data", (data: string) => {
+          .on('data', (data: string) => {
             // if (data.startsWith(key)) {
-            array.push(data);
+            array.push(data)
             // }
           })
-          .on("error", (err: any) => {
-            reject(new Error("Error finding keys"));
+          .on('error', (err: any) => {
+            reject(new Error('Error finding keys'))
           })
-          .on("close", () => {
-            resolve(array);
-          });
+          .on('close', () => {
+            resolve(array)
+          })
       } catch (error) {
-        reject(error);
+        reject(error)
       }
-    });
+    })
   }
 }

@@ -1,4 +1,4 @@
-import type { ToolDb, QueryAckMessage, QueryMessage } from "..";
+import type { ToolDb, QueryAckMessage, QueryMessage } from '..'
 
 export default function handleQuery(
   this: ToolDb,
@@ -9,22 +9,22 @@ export default function handleQuery(
     .query(message.key)
     .then((keys) => {
       this.network.sendToClientId(remotePeerId, {
-        type: "queryAck",
+        type: 'queryAck',
         id: message.id,
         to: [],
-        keys,
-      } as QueryAckMessage);
+        keys
+      } as QueryAckMessage)
     })
     .catch((e) => {
       // do nothing
-    });
+    })
 
   if (this.options.server) {
     const finalMessage: QueryMessage = {
       ...message,
-      to: [...message.to, remotePeerId],
-    };
+      to: [...message.to, remotePeerId]
+    }
 
-    this.network.sendToAll(finalMessage, true);
+    this.network.sendToAll(finalMessage, true)
   }
 }

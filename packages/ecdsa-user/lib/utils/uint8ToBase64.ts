@@ -1,10 +1,10 @@
-import toBase64 from "./toBase64";
+import toBase64 from './toBase64'
 
 export default function uint8ToBase64(byteArray: Uint8Array): string {
-  let byteString = "";
+  let byteString = ''
   for (let i = 0; i < byteArray.byteLength; i += 1) {
-    byteString += String.fromCodePoint(byteArray[i]);
+    byteString += String.fromCodePoint(byteArray[i])
   }
 
-  return toBase64(byteString);
+  return toBase64(byteString)
 }

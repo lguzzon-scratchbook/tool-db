@@ -1,81 +1,81 @@
-import Peer from "simple-peer";
-import WebSocket from "ws";
+import Peer from 'simple-peer'
+import WebSocket from 'ws'
 
-import { type ToolDb, sha1, textRandom, ToolDbNetworkAdapter } from "tool-db";
+import { type ToolDb, sha1, textRandom, ToolDbNetworkAdapter } from 'tool-db'
 
-type SocketMessageFn = (socket: WebSocket, e: { data: any }) => void;
+type SocketMessageFn = (socket: WebSocket, e: { data: any }) => void
 
 type IOffers = Record<
   string,
   {
-    peer: Peer.Instance;
-    offerP: Promise<Peer.Instance>;
+    peer: Peer.Instance
+    offerP: Promise<Peer.Instance>
   }
->;
+>
 
-const offerPoolSize = 5;
-const maxPeers = 4;
-const announceSecs = 30;
-const maxAnnounceSecs = 99999999;
+const offerPoolSize = 5
+const maxPeers = 4
+const announceSecs = 30
+const maxAnnounceSecs = 99999999
 
 const defaultTrackerUrls = [
-  "wss://tracker.webtorrent.dev",
-  "wss://tracker.openwebtorrent.com",
-  "wss://tracker.files.fm:7073/announce",
-  "wss://tooldb-tracker.herokuapp.com/",
+  'wss://tracker.webtorrent.dev',
+  'wss://tracker.openwebtorrent.com',
+  'wss://tracker.files.fm:7073/announce',
+  'wss://tooldb-tracker.herokuapp.com/'
   //"wss://tracker.fastcast.nz/announce",
   //"wss://tracker.btorrent.xyz/announce",
   //"wss://tracker.webtorrent.io/announce",
   //"wss://spacetradersapi-chatbox.herokuapp.com:443/announce",
-];
+]
 
 export default class toolDbWebrtc extends ToolDbNetworkAdapter {
   private wnd =
-    typeof window === "undefined" ? undefined : (window as any | undefined);
+    typeof window === 'undefined' ? undefined : (window as any | undefined)
 
   private wss = this.wnd
     ? this.wnd.WebSocket || this.wnd.webkitWebSocket || this.wnd.mozWebSocket
-    : WebSocket;
+    : WebSocket
 
-  private sockets: Record<string, WebSocket | null> = {};
+  private sockets: Record<string, WebSocket | null> = {}
 
-  private socketListeners: Record<string, Record<string, SocketMessageFn>> = {};
+  private socketListeners: Record<string, Record<string, SocketMessageFn>> = {}
 
-  private peerMap: Record<string, Peer.Instance> = {};
+  private peerMap: Record<string, Peer.Instance> = {}
 
-  private connectedPeers: Record<string, boolean> = {};
+  private connectedPeers: Record<string, boolean> = {}
 
   private onDisconnect = (id: string, err: any) => {
-    this.tooldb.logger(id, err);
-    if (this.connectedPeers[id]) delete this.connectedPeers[id];
-    if (this.peerMap[id]) delete this.peerMap[id];
+    this.tooldb.logger(id, err)
+    if (this.connectedPeers[id]) delete this.connectedPeers[id]
+    if (this.peerMap[id]) delete this.peerMap[id]
     if (Object.keys(this.peerMap).length === 0) {
-      this.tooldb.isConnected = false;
-      this.tooldb.onDisconnect();
+      this.tooldb.isConnected = false
+      this.tooldb.onDisconnect()
     }
-  };
+  }
 
   private peersCheck() {
     Object.keys(this.clientToSend).forEach((id) => {
       if (!this.isConnected(id)) {
-        this.tooldb.logger(`disconnected from ${id}`);
-        this.onClientDisconnect(id);
-        const peer = this.peerMap[id];
+        this.tooldb.logger(`disconnected from ${id}`)
+        this.onClientDisconnect(id)
+        const peer = this.peerMap[id]
         if (peer) {
-          peer.destroy();
+          peer.destroy()
         }
-        if (this.connectedPeers[id]) delete this.connectedPeers[id];
-        delete this.peerMap[id];
+        if (this.connectedPeers[id]) delete this.connectedPeers[id]
+        delete this.peerMap[id]
       }
-    });
+    })
 
     if (Object.keys(this.peerMap).length === 0) {
-      this.tooldb.isConnected = false;
-      this.tooldb.onDisconnect();
+      this.tooldb.isConnected = false
+      this.tooldb.onDisconnect()
     }
   }
 
-  private announceInterval;
+  private announceInterval
 
   /**
    * Initialize webrtc peer
@@ -89,99 +89,99 @@ export default class toolDbWebrtc extends ToolDbNetworkAdapter {
       wrtc: (this.tooldb.options as any).wrtc,
       initiator,
       trickle,
-      config: rtcConfig,
-    });
-    return peer;
-  };
+      config: rtcConfig
+    })
+    return peer
+  }
 
-  private handledOffers: Record<string, boolean> = {};
+  private handledOffers: Record<string, boolean> = {}
 
   private offerPool: Record<
     string,
     {
-      peer: Peer.Instance;
-      offerP: Promise<Peer.Instance>;
+      peer: Peer.Instance
+      offerP: Promise<Peer.Instance>
     }
-  > = {};
+  > = {}
 
-  private trackerUrls = defaultTrackerUrls; // .slice(0, 2);
+  private trackerUrls = defaultTrackerUrls // .slice(0, 2);
 
-  private infoHash = "";
+  private infoHash = ''
 
   /**
    * Make connection offers (sdp) to send to the tracker
    */
   private makeOffers = () => {
-    const offers: IOffers = {};
+    const offers: IOffers = {}
 
     new Array(offerPoolSize).fill(0).forEach(() => {
       try {
-        const peer = this.initPeer(true, false, {});
-        const oid = textRandom(20);
+        const peer = this.initPeer(true, false, {})
+        const oid = textRandom(20)
         offers[oid] = {
           peer,
-          offerP: new Promise((res) => peer.once("signal", res)),
-        };
+          offerP: new Promise((res) => peer.once('signal', res))
+        }
       } catch (e) {
-        this.tooldb.logger(e);
+        this.tooldb.logger(e)
       }
-    });
-    return offers;
-  };
+    })
+    return offers
+  }
 
   /**
    * When we sucessfully connect to a webrtc peer
    */
   private onPeerConnect = (peer: Peer.Instance, id: string) => {
     if (this.peerMap[id]) {
-      this.peerMap[id].end();
-      this.peerMap[id].destroy();
-      delete this.peerMap[id];
+      this.peerMap[id].end()
+      this.peerMap[id].destroy()
+      delete this.peerMap[id]
     }
 
-    let clientId: string | null = null;
+    let clientId: string | null = null
 
     // this.tooldb.logger("onPeerConnect", id);
 
     const onData = (data: Uint8Array) => {
-      const str = new TextDecoder().decode(data);
+      const str = new TextDecoder().decode(data)
 
-      this.onClientMessage(str, clientId || "", (id) => {
-        clientId = id;
+      this.onClientMessage(str, clientId || '', (id) => {
+        clientId = id
         // Set this socket's functions on the adapter
         this.isClientConnected[id] = () => {
-          return peer.connected;
-        };
+          return peer.connected
+        }
 
         this.clientToSend[id] = (_msg: string) => {
-          peer.send(_msg);
-        };
-      });
-    };
+          peer.send(_msg)
+        }
+      })
+    }
 
-    this.peerMap[id] = peer;
+    this.peerMap[id] = peer
 
-    peer.on("data", onData);
+    peer.on('data', onData)
 
-    peer.on("close", (err: any) => this.onDisconnect(id, err));
+    peer.on('close', (err: any) => this.onDisconnect(id, err))
 
-    peer.on("error", (err: any) => this.onDisconnect(id, err));
+    peer.on('error', (err: any) => this.onDisconnect(id, err))
 
     this.craftPingMessage().then((msg) => {
-      peer.send(msg);
-    });
-  };
+      peer.send(msg)
+    })
+  }
 
   /**
    * Handle the webrtc peer connection
    */
   private onConnect = (peer: Peer.Instance, id: string, offer_id?: string) => {
-    this.onPeerConnect(peer, id);
-    this.connectedPeers[id] = true;
+    this.onPeerConnect(peer, id)
+    this.connectedPeers[id] = true
     if (offer_id) {
-      this.connectedPeers[offer_id] = true;
+      this.connectedPeers[offer_id] = true
     }
-  };
+  }
 
   /**
    * Clean the announce offers pool
@@ -190,18 +190,18 @@ export default class toolDbWebrtc extends ToolDbNetworkAdapter {
     Object.entries(this.offerPool).forEach(([id, { peer }]) => {
       if (!this.handledOffers[id] && !this.connectedPeers[id]) {
         // this.tooldb.logger("closed peer " + id);
-        peer.end();
-        peer.destroy();
-        delete this.peerMap[id];
+        peer.end()
+        peer.destroy()
+        delete this.peerMap[id]
         if (Object.keys(this.peerMap).length === 0) {
-          this.tooldb.isConnected = false;
-          this.tooldb.onDisconnect();
+          this.tooldb.isConnected = false
+          this.tooldb.onDisconnect()
         }
       }
-    });
+    })
 
-    this.handledOffers = {} as Record<string, boolean>;
-  };
+    this.handledOffers = {} as Record<string, boolean>
+  }
 
   /**
    * Makes a websocket connection to a tracker
@@ -212,35 +212,35 @@ export default class toolDbWebrtc extends ToolDbNetworkAdapter {
         this.socketListeners[url] = {
           ...this.socketListeners[url],
           // eslint-disable-next-line no-use-before-define
-          [info_hash]: this.onSocketMessage,
-        };
+          [info_hash]: this.onSocketMessage
+        }
 
         try {
-          const socket = new this.wss(url);
+          const socket = new this.wss(url)
           // eslint-disable-next-line func-names
-          const socks = this.sockets;
+          const socks = this.sockets
           socket.onopen = function () {
-            socks[url] = this;
-            resolve(this);
-          };
+            socks[url] = this
+            resolve(this)
+          }
           socket.onmessage = (e: any) =>
             Object.values(this.socketListeners[url]).forEach((f) =>
               f(socket, e)
-            );
+            )
           // eslint-disable-next-line func-names
           socket.onerror = () => {
-            const index = this.trackerUrls.indexOf(url);
-            this.trackerUrls.splice(index, 1);
-            resolve(null);
-          };
+            const index = this.trackerUrls.indexOf(url)
+            this.trackerUrls.splice(index, 1)
+            resolve(null)
+          }
         } catch (e) {
-          resolve(null);
+          resolve(null)
         }
       } else {
-        resolve(this.sockets[url]);
+        resolve(this.sockets[url])
       }
-    });
-  };
+    })
+  }
 
   /**
    * Announce ourselves to a tracker (send "announce")
@@ -248,44 +248,44 @@ export default class toolDbWebrtc extends ToolDbNetworkAdapter {
   private announce = async (socket: WebSocket, infoHash: string) =>
     socket.send(
       JSON.stringify({
-        action: "announce",
+        action: 'announce',
         info_hash: infoHash,
         numwant: offerPoolSize,
         peer_id: this.getClientAddress(),
         offers: await Promise.all(
           Object.entries(this.offerPool).map(async ([id, { offerP }]) => {
-            const offer = await offerP;
+            const offer = await offerP
             // this.tooldb.logger(`Created offer id ${id}`);
             return {
               offer_id: id,
-              offer,
-            };
+              offer
+            }
           })
-        ),
+        )
       })
-    );
+    )
 
   /**
    * Announce ourselves to all trackers
    */
   private announceAll = async () => {
     if (this.offerPool) {
-      this.cleanPool();
+      this.cleanPool()
     }
 
-    this.offerPool = this.makeOffers();
+    this.offerPool = this.makeOffers()
 
     this.trackerUrls.forEach(async (url: string) => {
       // this.tooldb.logger("begin tracker connection " + url);
-      const socket = await this.makeSocket(url, this.infoHash);
+      const socket = await this.makeSocket(url, this.infoHash)
       // this.tooldb.logger(" ok tracker " + url);
       // this.tooldb.logger("socket", url, socket);
       if (socket && socket.readyState === 1) {
         // this.tooldb.logger("announce to " + url);
-        this.announce(socket, this.infoHash);
+        this.announce(socket, this.infoHash)
       }
-    });
-  };
+    })
+  }
 
   /**
    * Handle the tracker messages
@@ -295,106 +295,106 @@ export default class toolDbWebrtc extends ToolDbNetworkAdapter {
     e: any
   ) => {
     let val: {
-      info_hash: string;
-      peer_id: string;
-      "failure reason"?: string;
-      interval?: number;
-      offer?: string;
-      offer_id: string;
-      answer?: string;
-    };
+      info_hash: string
+      peer_id: string
+      'failure reason'?: string
+      interval?: number
+      offer?: string
+      offer_id: string
+      answer?: string
+    }
 
     try {
-      val = JSON.parse(e.data);
+      val = JSON.parse(e.data)
       // this.tooldb.logger("onSocketMessage", socket.url, val);
     } catch (_e: any) {
       // this.tooldb.logger(`${libName}: received malformed SDP JSON`);
-      return;
+      return
     }
 
-    const failure = val["failure reason"];
+    const failure = val['failure reason']
 
     if (failure) {
-      this.tooldb.logger(`${e.origin}: torrent tracker failure (${failure})`);
-      return;
+      this.tooldb.logger(`${e.origin}: torrent tracker failure (${failure})`)
+      return
     }
 
     if (val.info_hash !== this.infoHash) {
       // this.tooldb.logger("Info hash mismatch");
-      return;
+      return
     }
 
     if (val.peer_id && val.peer_id === this.getClientAddress()) {
       // this.tooldb.logger("Peer ids mismatch", val.peer_id, selfId);
-      return;
+      return
     }
 
     if (val.offer && val.offer_id) {
       if (this.connectedPeers[val.peer_id]) {
-        return;
+        return
       }
 
       if (this.handledOffers[val.offer_id]) {
-        return;
+        return
       }
 
       if (Object.keys(this.peerMap).length >= maxPeers) {
         if (this.offerPool) {
-          this.cleanPool();
+          this.cleanPool()
         }
-        return;
+        return
       }
 
-      this.handledOffers[val.offer_id] = true;
+      this.handledOffers[val.offer_id] = true
 
-      const peer = this.initPeer(false, false, {});
-      peer.once("signal", (answer: any) =>
+      const peer = this.initPeer(false, false, {})
+      peer.once('signal', (answer: any) =>
         socket.send(
           JSON.stringify({
             answer,
-            action: "announce",
+            action: 'announce',
             info_hash: this.infoHash,
             peer_id: this.getClientAddress(),
             to_peer_id: val.peer_id,
-            offer_id: val.offer_id,
+            offer_id: val.offer_id
           })
         )
-      );
+      )
 
-      peer.on("connect", () => this.onConnect(peer, val.peer_id));
-      peer.on("close", (err: any) => this.onDisconnect(val.peer_id, err));
-      peer.signal(val.offer);
-      return;
+      peer.on('connect', () => this.onConnect(peer, val.peer_id))
+      peer.on('close', (err: any) => this.onDisconnect(val.peer_id, err))
+      peer.signal(val.offer)
+      return
     }
 
     if (val.answer) {
       if (this.connectedPeers[val.peer_id]) {
-        return;
+        return
       }
 
       if (this.handledOffers[val.offer_id]) {
-        return;
+        return
       }
 
-      const offer = this.offerPool[val.offer_id];
+      const offer = this.offerPool[val.offer_id]
 
       if (offer) {
-        const { peer } = offer;
+        const { peer } = offer
 
         if (peer.destroyed) {
-          this.onDisconnect(val.peer_id, "destroyed");
-          return;
+          this.onDisconnect(val.peer_id, 'destroyed')
+          return
         }
 
-        this.handledOffers[val.offer_id] = true;
-        peer.on("connect", () => {
-          this.onConnect(peer, val.peer_id, val.offer_id);
-        });
-        peer.on("close", (err: any) => this.onDisconnect(val.peer_id, err));
-        peer.signal(val.answer);
+        this.handledOffers[val.offer_id] = true
+        peer.on('connect', () => {
+          this.onConnect(peer, val.peer_id, val.offer_id)
+        })
+        peer.on('close', (err: any) => this.onDisconnect(val.peer_id, err))
+        peer.signal(val.answer)
       }
     }
-  };
+  }
 
   /**
    * Leave the tracker
@@ -402,76 +402,76 @@ export default class toolDbWebrtc extends ToolDbNetworkAdapter {
   public onLeave = async () => {
     this.trackerUrls.forEach(
       (url) => delete this.socketListeners[url][this.infoHash]
-    );
-    clearInterval(this.announceInterval);
-    this.cleanPool();
-  };
+    )
+    clearInterval(this.announceInterval)
+    this.cleanPool()
+  }
 
   constructor(db: ToolDb) {
-    super(db);
+    super(db)
 
-    this.announceInterval = setInterval(this.announceAll, announceSecs * 1000);
+    this.announceInterval = setInterval(this.announceAll, announceSecs * 1000)
 
-    setInterval(() => this.peersCheck(), 100);
+    setInterval(() => this.peersCheck(), 100)
 
     // Stop announcing after maxAnnounceSecs
-    const intervalStart = new Date().getTime();
+    const intervalStart = new Date().getTime()
     const checkInterval = setInterval(() => {
       if (
         !this.tooldb.options.server &&
         new Date().getTime() - intervalStart > maxAnnounceSecs * 1000
       ) {
-        clearInterval(checkInterval);
-        clearInterval(this.announceInterval);
+        clearInterval(checkInterval)
+        clearInterval(this.announceInterval)
       }
-    }, 200);
+    }, 200)
 
-    this.infoHash = sha1(`tooldb:${this.tooldb.options.topic}`).slice(20);
+    this.infoHash = sha1(`tooldb:${this.tooldb.options.topic}`).slice(20)
 
     // Do not announce if we hit our max peers cap
     if (Object.keys(this.peerMap).length < maxPeers) {
-      this.announceAll();
+      this.announceAll()
     } else {
       if (this.offerPool) {
-        this.cleanPool();
+        this.cleanPool()
       }
     }
 
     // Basically the same as the WS network adapter
     // Only for Node!
-    if (this.tooldb.options.server && typeof window === "undefined") {
+    if (this.tooldb.options.server && typeof window === 'undefined') {
       const server = new WebSocket.Server({
         port: this.tooldb.options.port,
-        server: this.tooldb.options.httpServer,
-      });
+        server: this.tooldb.options.httpServer
+      })
 
-      server.on("connection", (socket: WebSocket) => {
-        let clientId: string | null = null;
+      server.on('connection', (socket: WebSocket) => {
+        let clientId: string | null = null
 
-        socket.on("close", () => {
+        socket.on('close', () => {
           if (clientId) {
-            this.onClientDisconnect(clientId);
+            this.onClientDisconnect(clientId)
           }
-        });
+        })
 
-        socket.on("error", () => {
+        socket.on('error', () => {
           if (clientId) {
-            this.onClientDisconnect(clientId);
+            this.onClientDisconnect(clientId)
           }
-        });
+        })
 
-        socket.on("message", (message: string) => {
-          this.onClientMessage(message, clientId || "", (id) => {
-            clientId = id;
+        socket.on('message', (message: string) => {
+          this.onClientMessage(message, clientId || '', (id) => {
+            clientId = id
             this.isClientConnected[id] = () => {
-              return socket.readyState === socket.OPEN;
-            };
+              return socket.readyState === socket.OPEN
+            }
             this.clientToSend[id] = (_msg: string) => {
-              socket.send(_msg);
-            };
-          });
-        });
-      });
+              socket.send(_msg)
+            }
+          })
+        })
+      })
     }
   }
 

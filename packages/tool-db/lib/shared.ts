@@ -1,5 +1,5 @@
 const shared = {
-  toolDb: undefined,
-} as any;
+  toolDb: undefined
+} as any
 
-export default shared;
+export default shared

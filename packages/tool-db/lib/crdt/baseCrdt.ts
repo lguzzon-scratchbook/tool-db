@@ -1,21 +1,21 @@
-export const CRDT_MAP = "MAP";
+export const CRDT_MAP = 'MAP'
 
-export const CRDT_LIST = "LIST";
+export const CRDT_LIST = 'LIST'
 
-export const CRDT_COUNTER = "COUNTER";
+export const CRDT_COUNTER = 'COUNTER'
 
 export class BaseCrdt<T = any, Changes = any, Value = any> {
-  public type = "";
+  public type = ''
 
   public mergeChanges(changes: Changes[]) {
     //
   }
 
   public getChanges(): Changes[] {
-    return [];
+    return []
   }
 
   get value(): Value {
-    return "" as any;
+    return '' as any
   }
 }

@@ -11,10 +11,10 @@ import {
   ListCrdt,
   type ListChanges,
   CounterCrdt,
-  type CounterChanges,
-} from "..";
+  type CounterChanges
+} from '..'
 
-import toolDbVerificationWrapper from "../toolDbVerificationWrapper";
+import toolDbVerificationWrapper from '../toolDbVerificationWrapper'
 
 export default function handleCrdtPut(
   this: ToolDb,
@@ -26,23 +26,23 @@ export default function handleCrdtPut(
     if (value === VerifyResult.Verified) {
       const finalMessage: CrdtPutMessage = {
         ...message,
-        to: [...message.to, remotePeerId],
-      };
+        to: [...message.to, remotePeerId]
+      }
 
-      this.emit("crdtput", finalMessage);
-      this.emit("data", finalMessage.data);
-      this.emit("verified", finalMessage);
+      this.emit('crdtput', finalMessage)
+      this.emit('data', finalMessage.data)
+      this.emit('verified', finalMessage)
       // relay to other servers !!!
-      this.network.sendToAll(finalMessage, true);
+      this.network.sendToAll(finalMessage, true)
 
       this.store
         .get(finalMessage.data.k)
         .then((oldData) => {
           if (oldData) {
             try {
-              const parsedOldData: VerificationData<any> = JSON.parse(oldData);
+              const parsedOldData: VerificationData<any> = JSON.parse(oldData)
 
-              let newMessage = finalMessage;
+              let newMessage = finalMessage
 
               // Merge old document with new data incoming and save it
               // Add handles for all kinds of CRDT we add
@@ -50,54 +50,54 @@ export default function handleCrdtPut(
                 | MapCrdt<any>
                 | ListCrdt<any>
                 | CounterCrdt<any>
-                | undefined;
+                | undefined
 
               if (parsedOldData.c === CRDT_MAP) {
                 oldDoc = new MapCrdt(
-                  this.userAccount.getAddress() || "",
+                  this.userAccount.getAddress() || '',
                   parsedOldData.v
-                );
+                )
               }
 
               if (parsedOldData.c === CRDT_LIST) {
                 oldDoc = new ListCrdt(
-                  this.userAccount.getAddress() || "",
+                  this.userAccount.getAddress() || '',
                   parsedOldData.v
-                );
+                )
               }
 
               if (parsedOldData.c === CRDT_COUNTER) {
                 oldDoc = new CounterCrdt(
-                  this.userAccount.getAddress() || "",
+                  this.userAccount.getAddress() || '',
                   parsedOldData.v
-                );
+                )
               }
 
               let changesMerged:
                 | MapChanges<any>[]
                 | ListChanges<any>[]
-                | CounterChanges[] = [];
+                | CounterChanges[] = []
 
               if (oldDoc) {
-                oldDoc.mergeChanges(finalMessage.data.v);
-                changesMerged = oldDoc.getChanges();
+                oldDoc.mergeChanges(finalMessage.data.v)
+                changesMerged = oldDoc.getChanges()
               }
               newMessage = {
-                ...finalMessage,
-              };
-              newMessage.data.v = changesMerged;
+                ...finalMessage
+              }
+              newMessage.data.v = changesMerged
 
               if (parsedOldData.t < finalMessage.data.t) {
-                const key = newMessage.data.k;
-                this.triggerKeyListener(key, newMessage.data);
+                const key = newMessage.data.k
+                this.triggerKeyListener(key, newMessage.data)
                 this.store
                   .put(newMessage.data.k, JSON.stringify(newMessage.data))
                   .catch((e) => {
                     // do nothing
-                  });
+                  })
               } else {
-                const key = message.data.k;
-                this.triggerKeyListener(key, parsedOldData);
+                const key = message.data.k
+                this.triggerKeyListener(key, parsedOldData)
               }
               // } else {
               //   this.logger(
@@ -105,29 +105,29 @@ export default function handleCrdtPut(
               //   );
               // }
             } catch (e) {
-              this.logger("Couldnt parse crdt data", oldData, e);
+              this.logger('Couldnt parse crdt data', oldData, e)
             }
           } else {
-            const key = finalMessage.data.k;
-            this.triggerKeyListener(key, finalMessage.data);
+            const key = finalMessage.data.k
+            this.triggerKeyListener(key, finalMessage.data)
             this.store
               .put(finalMessage.data.k, JSON.stringify(finalMessage.data))
               .catch((e) => {
-                this.logger("Couldnt insert crdt data", e);
-              });
+                this.logger('Couldnt insert crdt data', e)
+              })
           }
         })
         .catch((e) => {
-          const key = finalMessage.data.k;
-          this.triggerKeyListener(key, finalMessage.data);
+          const key = finalMessage.data.k
+          this.triggerKeyListener(key, finalMessage.data)
           this.store
             .put(finalMessage.data.k, JSON.stringify(finalMessage.data))
             .catch((e) => {
               // do nothing
-            });
-        });
+            })
+        })
     } else {
-      this.logger("unverified message: ", value, message);
+      this.logger('unverified message: ', value, message)
     }
-  });
+  })
 }

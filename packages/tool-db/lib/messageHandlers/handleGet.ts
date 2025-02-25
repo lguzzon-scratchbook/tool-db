@@ -1,4 +1,4 @@
-import type { ToolDb, GetMessage, PutMessage } from "..";
+import type { ToolDb, GetMessage, PutMessage } from '..'
 
 export default function handleGet(
   this: ToolDb,
@@ -11,12 +11,12 @@ export default function handleGet(
       try {
         // Use the id of the get so the other client knows we are replying
         const oldData = {
-          type: "put",
+          type: 'put',
           data: JSON.parse(data),
           to: [],
-          id: message.id,
-        } as PutMessage;
-        this.network.sendToClientId(remotePeerId, oldData);
+          id: message.id
+        } as PutMessage
+        this.network.sendToClientId(remotePeerId, oldData)
       } catch (e) {
         // socket.send(data);
         // do nothing
@@ -25,10 +25,10 @@ export default function handleGet(
     .catch((e) => {
       const finalMessage: GetMessage = {
         ...message,
-        to: [...message.to, remotePeerId],
-      };
+        to: [...message.to, remotePeerId]
+      }
 
-      this.logger("Local key not found, relay", JSON.stringify(finalMessage));
-      this.network.sendToAll(finalMessage, false);
-    });
+      this.logger('Local key not found, relay', JSON.stringify(finalMessage))
+      this.network.sendToAll(finalMessage, false)
+    })
 }

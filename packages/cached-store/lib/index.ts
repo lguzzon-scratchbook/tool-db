@@ -1,39 +1,60 @@
-import { type ToolDb, ToolDbStorageAdapter, ToolDbStorageAdapterAdapter } from "tool-db";
-import { TTLCache } from "@isaacs/ttlcache";
+import {
+  type ToolDb,
+  type ToolDbStorageAdapter,
+  ToolDbStorageAdapterAdapter
+} from 'tool-db'
+import TTLCache from '@isaacs/ttlcache'
 
 export default class ToolDbCached extends ToolDbStorageAdapterAdapter {
-  private cache
+  private getCache: TTLCache<string, string>
+  private queryCacheKeysToRemove: Set<string> = new Set()
+  private queryCache: TTLCache<string, string[]>
 
-  constructor(storageAdapter: ToolDbStorageAdapter, forceStorageName?: string, maxCacheSize = 1000, maxCacheAge = 1000 * 60 * 60) {
-    super(storageAdapter, forceStorageName);
-    this.cache = new TTLCache({ max: maxCacheSize, ttl: maxCacheAge });
+  constructor(
+    storageAdapter: ToolDbStorageAdapter,
+    forceStorageName?: string,
+    maxCacheSize = 1000,
+    maxCacheAge = 1000 * 60 * 60
+  ) {
+    super(storageAdapter, forceStorageName)
+    this.getCache = new TTLCache({ max: maxCacheSize, ttl: maxCacheAge })
+    this.queryCache = new TTLCache({ max: maxCacheSize, ttl: maxCacheAge })
   }
 
-  public put(key: string, data: string) {
-    this.cache.set(key, data);
-    return this.storage.put(key, data)
+  public async put(key: string, data: string): Promise<void> {
+    this.getCache.set(key, data)
+    this.queryCacheKeysToRemove.add(key)
+    return this.storage.put(key, data) as Promise<void>
   }
 
-  public get(key: string) {
-    return new Promise<string>((resolve, reject) => {
-      if (this.cache.has(key)) {
-        const data: string = this.cache.get(key);
-        resolve(data);
-        return;
-      } else {
-        this.storage.get(key).then((data) => {
-          this.cache.set(key, data);
-          resolve(data);
-          return;
-        }).catch((error) => {
-          reject(error);
-        });
+  public async get(key: string): Promise<string> {
+    if (this.getCache.has(key)) {
+      return this.getCache.get(key) || ''
+    }
+    const data = await this.storage.get(key)
+    this.getCache.set(key, data)
+    return data
+  }
+
+  public async query(key: string): Promise<string[]> {
+    if (this.removeStaleQueryCacheKeys(key) && this.queryCache.has(key)) {
+      return this.queryCache.get(key) || []
+    }
+    const data = await this.storage.query(key)
+    this.queryCache.set(key, data)
+    return data
+  }
+
+  private removeStaleQueryCacheKeys(keyPrefix: string): boolean {
+    const keysToDelete: string[] = Array.from(
+      this.queryCacheKeysToRemove
+    ).filter((aKey) => aKey.startsWith(keyPrefix))
+    if (keysToDelete.length > 0) {
+      for (const aKey of keysToDelete) {
+        this.queryCacheKeysToRemove.delete(aKey)
       }
-    })
-  }
-
-  public query(key: string) {
-    // console.warn(this.storageName, "QUERY", key);
-    return this.storage.query(key)
+      this.queryCache.delete(keyPrefix)
+    }
+    return keysToDelete.length <= 0
   }
 }

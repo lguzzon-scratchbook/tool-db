@@ -1,55 +1,51 @@
-import {
-  ToolDb,
-} from "tool-db";
+import { ToolDb } from 'tool-db'
 
-import ToolDbLeveldb from "../packages/leveldb-store/dist";
-import ToolDbWebsockets from "../packages/websocket-network/dist";
-import ToolDbWeb3 from "../packages/web3-user/dist";
+import ToolDbLeveldb from '../packages/leveldb-store/dist'
+import ToolDbWebsockets from '../packages/websocket-network/dist'
+import ToolDbWeb3 from '../packages/web3-user/dist'
 
-import { describe, test, beforeAll, afterAll, expect } from "bun:test";
+import { describe, test, beforeAll, afterAll, expect } from 'bun:test'
 
-describe("network-base", () => {
+describe('network-base', () => {
+  let nodeA: ToolDb
 
-  let nodeA: ToolDb;
-
-  beforeAll(() => {
-  })
+  beforeAll(() => {})
 
   afterAll((done) => {
     if (nodeA) {
-      (nodeA.network as any).server.close();
+      ;(nodeA.network as any).server.close()
     }
-    setTimeout(done, 500);
-  });
+    setTimeout(done, 500)
+  })
 
-  test("A can retry connection", (done) => {
+  test('A can retry connection', (done) => {
     const Alice = new ToolDb({
       server: false,
       maxRetries: 1000,
-      peers: [{ host: "localhost", port: 8001 }],
-      storageName: "test-base-client",
+      peers: [{ host: 'localhost', port: 8001 }],
+      storageName: 'test-base-client',
       storageAdapter: ToolDbLeveldb,
       networkAdapter: ToolDbWebsockets,
-      userAdapter: ToolDbWeb3,
-    });
-    Alice.anonSignIn();
+      userAdapter: ToolDbWeb3
+    })
+    Alice.anonSignIn()
     Alice.onConnect = () => {
-      expect(Alice.isConnected).toBeTruthy();
-      done();
-    };
+      expect(Alice.isConnected).toBeTruthy()
+      done()
+    }
 
     setTimeout(() => {
       nodeA = new ToolDb({
         server: true,
-        host: "127.0.0.1",
+        host: '127.0.0.1',
         port: 8001,
-        storageName: "test-base-server",
+        storageName: 'test-base-server',
         storageAdapter: ToolDbLeveldb,
         networkAdapter: ToolDbWebsockets,
-        userAdapter: ToolDbWeb3,
-      });
-      nodeA.anonSignIn();
-      expect(Alice.isConnected).toBeFalsy();
-    }, 5000);
-  });
-});
+        userAdapter: ToolDbWeb3
+      })
+      nodeA.anonSignIn()
+      expect(Alice.isConnected).toBeFalsy()
+    }, 5000)
+  })
+})

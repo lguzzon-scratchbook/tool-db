@@ -1,4 +1,4 @@
-import { type ToolDb, sha256, randomAnimal } from ".";
+import { type ToolDb, sha256, randomAnimal } from '.'
 
 export default function toolDbSignIn(
   this: ToolDb,
@@ -9,8 +9,8 @@ export default function toolDbSignIn(
   return new Promise((resolve, reject) => {
     this.getData<unknown>(`==${user}`, false, 5000, to).then((_user) => {
       if (!_user) {
-        reject("Could not find user");
-        return;
+        reject('Could not find user')
+        return
       }
 
       try {
@@ -20,13 +20,13 @@ export default function toolDbSignIn(
             this.userAccount.setUser(
               newAccount,
               user || `Anonymous ${randomAnimal()}`
-            );
+            )
 
-            resolve(_user);
-          });
+            resolve(_user)
+          })
       } catch (e) {
-        reject(e);
+        reject(e)
       }
-    });
-  });
+    })
+  })
 }

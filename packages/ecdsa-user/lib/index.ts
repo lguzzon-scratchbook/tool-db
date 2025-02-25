@@ -3,127 +3,127 @@ import {
   randomAnimal,
   type ToolDb,
   ToolDbUserAdapter,
-  type VerificationData,
-} from "tool-db";
+  type VerificationData
+} from 'tool-db'
 
-import arrayBufferToHex from "./utils/arrayBufferToHex";
-import hexToArrayBuffer from "./utils/hexToArrayBuffer";
-import base64ToUint8 from "./utils/base64ToUint8";
-import uint8ToBase64 from "./utils/uint8ToBase64";
+import arrayBufferToHex from './utils/arrayBufferToHex'
+import hexToArrayBuffer from './utils/hexToArrayBuffer'
+import base64ToUint8 from './utils/base64ToUint8'
+import uint8ToBase64 from './utils/uint8ToBase64'
 
-import cryptoKeyPairToHexed from "./crypto/cryptoKeyPairToHexed";
-import generateKeysComb from "./crypto/generateKeysComb";
-import decryptWithPass from "./crypto/decryptWithPass";
-import encryptWithPass from "./crypto/encryptWithPass";
-import pubkeyToBase64 from "./crypto/pubkeyToBase64";
-import base64ToPubkey from "./crypto/base64ToPubkey";
-import verifyData from "./crypto/verifyData";
-import generateIv from "./crypto/generateIv";
-import exportKey from "./crypto/exportKey";
-import importKey from "./crypto/importKey";
-import signData from "./crypto/signData";
+import cryptoKeyPairToHexed from './crypto/cryptoKeyPairToHexed'
+import generateKeysComb from './crypto/generateKeysComb'
+import decryptWithPass from './crypto/decryptWithPass'
+import encryptWithPass from './crypto/encryptWithPass'
+import pubkeyToBase64 from './crypto/pubkeyToBase64'
+import base64ToPubkey from './crypto/base64ToPubkey'
+import verifyData from './crypto/verifyData'
+import generateIv from './crypto/generateIv'
+import exportKey from './crypto/exportKey'
+import importKey from './crypto/importKey'
+import signData from './crypto/signData'
 
-import type { ECDSAUser, EncryptedUserdata, HexedKeys } from "./types";
+import type { ECDSAUser, EncryptedUserdata, HexedKeys } from './types'
 
-const PUBKEY_PREFIX = "3059301306072a8648ce3d020106082a8648ce3d03010703420004";
+const PUBKEY_PREFIX = '3059301306072a8648ce3d020106082a8648ce3d03010703420004'
 
 export default class ToolDbEcdsaUser extends ToolDbUserAdapter {
-  private _address!: string;
+  private _address!: string
 
-  private _username!: string;
+  private _username!: string
 
-  private _keys!: globalThis.CryptoKeyPair;
+  private _keys!: globalThis.CryptoKeyPair
 
   constructor(db: ToolDb) {
-    super(db);
+    super(db)
 
     // eslint-disable-next-line global-require
-    global.Buffer = global.Buffer || require("node:buffer").Buffer;
+    global.Buffer = global.Buffer || require('node:buffer').Buffer
 
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       // eslint-disable-next-line global-require
-      global.crypto = require("node:crypto").webcrypto;
+      global.crypto = require('node:crypto').webcrypto
     }
 
-    this.anonUser();
+    this.anonUser()
   }
 
   public anonUser() {
     generateKeysComb().then((keys) => {
       pubkeyToBase64(keys.publicKey as CryptoKey).then((rawPublic) => {
-        this._keys = keys;
-        this._address = rawPublic;
-        this._username = randomAnimal();
-      });
-    });
+        this._keys = keys
+        this._address = rawPublic
+        this._username = randomAnimal()
+      })
+    })
   }
 
   public setUser(account: ECDSAUser, _name: string): void {
-    const pub = hexToArrayBuffer(account.pub);
-    const priv = hexToArrayBuffer(account.priv);
+    const pub = hexToArrayBuffer(account.pub)
+    const priv = hexToArrayBuffer(account.priv)
 
-    importKey(pub, "spki", "ECDSA", ["verify"]).then((spub) =>
-      importKey(priv, "pkcs8", "ECDSA", ["sign"]).then((spriv) => {
+    importKey(pub, 'spki', 'ECDSA', ['verify']).then((spub) =>
+      importKey(priv, 'pkcs8', 'ECDSA', ['sign']).then((spriv) => {
         this._keys = {
           publicKey: spub,
-          privateKey: spriv,
-        };
+          privateKey: spriv
+        }
 
-        this._username = account.name;
+        this._username = account.name
         pubkeyToBase64(spub).then((addr) => {
-          this._address = addr;
-        });
+          this._address = addr
+        })
       })
-    );
+    )
   }
 
   public signData(data: string): Promise<string> {
     return signData(data, this._keys.privateKey as CryptoKey).then(
       (signature) => {
-        return arrayBufferToHex(signature);
+        return arrayBufferToHex(signature)
       }
-    );
+    )
   }
 
   public async getPublic() {
     const jwkPrivate = await crypto.subtle.exportKey(
-      "jwk",
+      'jwk',
       this._keys.privateKey as CryptoKey
-    );
+    )
 
-    jwkPrivate.d = undefined;
-    jwkPrivate.key_ops = ["verify"];
+    jwkPrivate.d = undefined
+    jwkPrivate.key_ops = ['verify']
 
     const reimportedPubkey = await crypto.subtle.importKey(
-      "jwk",
+      'jwk',
       jwkPrivate,
-      { name: "ECDSA", namedCurve: "P-256" },
+      { name: 'ECDSA', namedCurve: 'P-256' },
       true,
-      ["verify"]
-    );
+      ['verify']
+    )
 
-    const addr = await exportKey("spki", reimportedPubkey).then((rawPublic) => {
+    const addr = await exportKey('spki', reimportedPubkey).then((rawPublic) => {
       return arrayBufferToHex(rawPublic as ArrayBuffer).slice(
         PUBKEY_PREFIX.length
-      );
-    });
-    return addr;
+      )
+    })
+    return addr
   }
 
   public verifySignature(
     message: Partial<VerificationData<any>>
   ): Promise<boolean> {
-    if (!message.h || !message.a || !message.s) return Promise.resolve(false);
+    if (!message.h || !message.a || !message.s) return Promise.resolve(false)
 
     return base64ToPubkey(message.a).then((pubKey) => {
-      if (!message.h || !message.a || !message.s) return false;
+      if (!message.h || !message.a || !message.s) return false
 
       return verifyData(message.h, hexToArrayBuffer(message.s), pubKey).then(
         (result) => {
-          return result;
+          return result
         }
-      );
-    });
+      )
+    })
   }
 
   public encryptAccount(password: string): Promise<EncryptedUserdata> {
@@ -131,27 +131,27 @@ export default class ToolDbEcdsaUser extends ToolDbUserAdapter {
       // Wait for keys if undefined
       if (this._keys === undefined) {
         setTimeout(() => {
-          resolve(this.encryptAccount(password));
-        }, 10);
+          resolve(this.encryptAccount(password))
+        }, 10)
       } else {
         resolve(
           cryptoKeyPairToHexed(this._keys).then((hexed) => {
-            const iv = generateIv();
-            this.tooldb.logger("cryptoKeyPairToHexed", hexed);
+            const iv = generateIv()
+            this.tooldb.logger('cryptoKeyPairToHexed', hexed)
             return encryptWithPass(JSON.stringify(hexed), password, iv).then(
               (keys) => {
-                this.tooldb.logger("encryptWithPass", keys);
+                this.tooldb.logger('encryptWithPass', keys)
                 return {
                   name: this._username || randomAnimal(),
-                  keys: keys || "",
-                  iv: uint8ToBase64(iv),
-                };
+                  keys: keys || '',
+                  iv: uint8ToBase64(iv)
+                }
               }
-            );
+            )
           })
-        );
+        )
       }
-    });
+    })
   }
 
   public decryptAccount(
@@ -162,30 +162,30 @@ export default class ToolDbEcdsaUser extends ToolDbUserAdapter {
       // Wait for keys if undefined
       if (this._keys === undefined) {
         setTimeout(() => {
-          resolve(this.decryptAccount(acc, password));
-        }, 10);
+          resolve(this.decryptAccount(acc, password))
+        }, 10)
       } else {
-        const rawIv = base64ToUint8(acc.iv);
+        const rawIv = base64ToUint8(acc.iv)
         resolve(
           decryptWithPass(acc.keys, password, rawIv).then((data) => {
-            const hexedKeys: HexedKeys = JSON.parse(data || "");
+            const hexedKeys: HexedKeys = JSON.parse(data || '')
 
             return {
               name: acc.name,
               pub: hexedKeys.pub,
-              priv: hexedKeys.priv,
-            };
+              priv: hexedKeys.priv
+            }
           })
-        );
+        )
       }
-    });
+    })
   }
 
   public getAddress(): string | undefined {
-    return this._address;
+    return this._address
   }
 
   public getUsername(): string | undefined {
-    return this._username;
+    return this._username
   }
 }

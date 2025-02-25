@@ -1,4 +1,4 @@
-import { type ToolDb, type VerificationData, VerifyResult } from ".";
+import { type ToolDb, type VerificationData, VerifyResult } from '.'
 
 export default function toolDbVerificationWrapper(
   this: ToolDb,
@@ -8,18 +8,18 @@ export default function toolDbVerificationWrapper(
   return new Promise((resolve) => {
     this.verifyMessage(data, this.options.pow).then(async (verified) => {
       if (verified) {
-        let skipCustom = true;
+        let skipCustom = true
         this._customVerificator.forEach((listener) => {
           if (listener && data.k && data.k.startsWith(listener.key)) {
-            skipCustom = false;
+            skipCustom = false
 
-            let previousData: any = undefined;
+            let previousData: any = undefined
             // Get the previously stored value of this key
             this.store
               .get(data.k)
               .then((prev) => {
                 try {
-                  previousData = JSON.parse(prev);
+                  previousData = JSON.parse(prev)
                 } catch (e) {
                   // do nothing
                 }
@@ -32,24 +32,24 @@ export default function toolDbVerificationWrapper(
                   .fn(data, previousData)
                   .then((verified: boolean) => {
                     if (verified) {
-                      resolve(VerifyResult.Verified);
+                      resolve(VerifyResult.Verified)
                     } else {
-                      resolve(VerifyResult.CustomVerificationFailed);
+                      resolve(VerifyResult.CustomVerificationFailed)
                     }
                   })
                   .catch((e) => {
-                    resolve(VerifyResult.CustomVerificationFailed);
-                  });
-              });
+                    resolve(VerifyResult.CustomVerificationFailed)
+                  })
+              })
           }
-        });
+        })
 
         if (skipCustom) {
-          resolve(verified);
+          resolve(verified)
         }
       } else {
-        resolve(VerifyResult.InvalidVerification);
+        resolve(VerifyResult.InvalidVerification)
       }
-    });
-  });
+    })
+  })
 }

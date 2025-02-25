@@ -3,8 +3,8 @@ import {
   type PutMessage,
   textRandom,
   type VerificationData,
-  proofOfWork,
-} from ".";
+  proofOfWork
+} from '.'
 
 /**
  * Triggers a PUT request to other peers.
@@ -21,21 +21,21 @@ export default function toolDbPut<T = any>(
   to?: string[]
 ): Promise<PutMessage<T> | null> {
   return new Promise((resolve, reject) => {
-    if (key.includes(".")) {
+    if (key.includes('.')) {
       // Dots are used as a delimitator character between bublic keys and the key of the user's data
-      reject(new Error(`Key cannot include dots!; ${key}`));
-      return;
+      reject(new Error(`Key cannot include dots!; ${key}`))
+      return
     }
 
     if (!this.userAccount || !this.userAccount.getAddress()) {
-      reject(new Error("You need to log in before you can PUT."));
-      return;
+      reject(new Error('You need to log in before you can PUT.'))
+      return
     }
 
-    const timestamp = new Date().getTime();
+    const timestamp = new Date().getTime()
     const dataString = `${JSON.stringify(
       value
-    )}${this.userAccount.getAddress()}${timestamp}`;
+    )}${this.userAccount.getAddress()}${timestamp}`
 
     // WORK
     proofOfWork(dataString, this.options.pow)
@@ -44,41 +44,41 @@ export default function toolDbPut<T = any>(
           if (signature && this.userAccount.getAddress()) {
             const finalKey = userNamespaced
               ? `:${this.userAccount.getAddress()}.${key}`
-              : key;
+              : key
 
             // Compose the message
             const data: VerificationData = {
               k: finalKey,
-              a: this.userAccount.getAddress() || "",
+              a: this.userAccount.getAddress() || '',
               n: nonce,
               t: timestamp,
               h: hash,
               s: signature,
               v: value,
-              c: null,
-            };
+              c: null
+            }
 
-            this.logger("PUT", key, data);
+            this.logger('PUT', key, data)
 
             const finalMessage: PutMessage = {
-              type: "put",
+              type: 'put',
               id: textRandom(10),
               to: to || [],
-              data,
-            };
+              data
+            }
 
-            this.network.sendToAll(finalMessage);
+            this.network.sendToAll(finalMessage)
             this.store
               .put(finalKey, JSON.stringify(data))
               .catch((e) => {
                 // do nothing
               })
               .finally(() => {
-                resolve(finalMessage);
-              });
+                resolve(finalMessage)
+              })
           }
-        });
+        })
       })
-      .catch(reject);
-  });
+      .catch(reject)
+  })
 }

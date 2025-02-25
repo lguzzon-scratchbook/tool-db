@@ -1,4 +1,4 @@
-import { type ToolDb, textRandom } from ".";
+import { type ToolDb, textRandom } from '.'
 
 /**
  * Triggers a GET request to other peers. If the data is available locally it will return that instead.
@@ -16,66 +16,66 @@ export default function toolDbGet<T = any>(
 ): Promise<T | null> {
   return new Promise((resolve, reject) => {
     if (userNamespaced && this.userAccount.getAddress() === undefined) {
-      reject(new Error("You are not authorized yet!"));
-      return;
+      reject(new Error('You are not authorized yet!'))
+      return
     }
     const finalKey = userNamespaced
       ? `:${this.userAccount.getAddress()}.${key}`
-      : key;
-    this.logger("GET", finalKey);
+      : key
+    this.logger('GET', finalKey)
 
-    const msgId = textRandom(10);
+    const msgId = textRandom(10)
 
     const cancelTimeout = setTimeout(() => {
       this.store
         .get(finalKey)
         .then((data) => {
           try {
-            const message = JSON.parse(data);
-            this.emit("data", message);
-            resolve(message.v);
+            const message = JSON.parse(data)
+            this.emit('data', message)
+            resolve(message.v)
           } catch (e) {
-            resolve(null);
+            resolve(null)
           }
         })
         .catch((e) => {
-          resolve(null);
-        });
-    }, timeoutMs);
+          resolve(null)
+        })
+    }, timeoutMs)
 
     this.addIdListener(msgId, (msg) => {
-      this.logger("GET RECV", finalKey);
+      this.logger('GET RECV', finalKey)
 
-      clearTimeout(cancelTimeout);
-      if (msg.type === "put") {
-        resolve(msg.data.v);
+      clearTimeout(cancelTimeout)
+      if (msg.type === 'put') {
+        resolve(msg.data.v)
       }
-    });
+    })
 
     this.store
       .get(finalKey)
       .then((data) => {
         try {
-          const parsed = JSON.parse(data);
-          const val = parsed.v;
-          clearTimeout(cancelTimeout);
-          this.removeIdListener(msgId);
-          this.emit("data", parsed);
-          resolve(val);
+          const parsed = JSON.parse(data)
+          const val = parsed.v
+          clearTimeout(cancelTimeout)
+          this.removeIdListener(msgId)
+          this.emit('data', parsed)
+          resolve(val)
         } catch (e) {
           // do nothing
         }
       })
       .catch((e) => {
         // do nothing
-      });
+      })
 
     // Do get
     this.network.sendToAll({
-      type: "get",
+      type: 'get',
       to: to || [],
       key: finalKey,
-      id: msgId,
-    });
-  });
+      id: msgId
+    })
+  })
 }

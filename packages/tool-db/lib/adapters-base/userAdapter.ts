@@ -1,49 +1,49 @@
-import type { ToolDb, VerificationData } from "..";
+import type { ToolDb, VerificationData } from '..'
 
 export default class ToolDbUserAdapter {
-  private _tooldb: ToolDb;
+  private _tooldb: ToolDb
 
   get tooldb() {
-    return this._tooldb;
+    return this._tooldb
   }
 
   constructor(db: ToolDb) {
-    this._tooldb = db;
+    this._tooldb = db
   }
 
   public anonUser() {
-    return;
+    return
   }
 
   public setUser(account: unknown | undefined, name: string): void {}
 
   public signData(data: string): Promise<string> {
-    return Promise.resolve("");
+    return Promise.resolve('')
   }
 
   public verifySignature(
     message: Partial<VerificationData<any>>
   ): Promise<boolean> {
-    return Promise.resolve(false);
+    return Promise.resolve(false)
   }
 
   public getAccountFromPrivate(privateKey: string): Promise<unknown> {
-    return Promise.resolve(undefined);
+    return Promise.resolve(undefined)
   }
 
   public encryptAccount(password: string): Promise<unknown> {
-    return Promise.resolve(undefined);
+    return Promise.resolve(undefined)
   }
 
   public decryptAccount(acc: unknown, password: string): Promise<any> {
-    return Promise.resolve(undefined);
+    return Promise.resolve(undefined)
   }
 
   public getAddress(): string | undefined {
-    return "";
+    return ''
   }
 
   public getUsername(): string | undefined {
-    return "";
+    return ''
   }
 }

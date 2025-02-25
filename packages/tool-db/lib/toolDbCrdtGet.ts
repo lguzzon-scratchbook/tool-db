@@ -1,4 +1,4 @@
-import { textRandom, type BaseCrdt, type ToolDb, type CrdtPutMessage } from ".";
+import { textRandom, type BaseCrdt, type ToolDb, type CrdtPutMessage } from '.'
 
 /**
  * Triggers a GET request to other peers. If the data is available locally it will return that instead.
@@ -17,67 +17,67 @@ export default function toolDbCrdtGet<T = any>(
 ): Promise<CrdtPutMessage<T> | null> {
   return new Promise((resolve, reject) => {
     if (userNamespaced && this.userAccount.getAddress() === undefined) {
-      reject(new Error("You are not authorized yet!"));
-      return;
+      reject(new Error('You are not authorized yet!'))
+      return
     }
     const finalKey = userNamespaced
       ? `:${this.userAccount.getAddress()}.${key}`
-      : key;
-    this.logger("CRDT GET", finalKey);
+      : key
+    this.logger('CRDT GET', finalKey)
 
-    const msgId = textRandom(10);
+    const msgId = textRandom(10)
 
     const cancelTimeout = setTimeout(() => {
       this.store
         .get(finalKey)
         .then((data) => {
           try {
-            const message = JSON.parse(data);
-            crdt.mergeChanges(message.v);
+            const message = JSON.parse(data)
+            crdt.mergeChanges(message.v)
 
-            this.emit("data", message);
-            resolve(message);
+            this.emit('data', message)
+            resolve(message)
           } catch (e) {
-            resolve(null);
+            resolve(null)
           }
         })
-        .catch((e) => reject(null));
-    }, timeoutMs);
+        .catch((e) => reject(null))
+    }, timeoutMs)
 
     this.addIdListener(msgId, (msg) => {
-      this.logger("GET RECV", finalKey);
+      this.logger('GET RECV', finalKey)
 
-      clearTimeout(cancelTimeout);
-      if (msg.type === "crdtPut") {
-        crdt.mergeChanges(msg.data.v);
-        resolve(msg);
+      clearTimeout(cancelTimeout)
+      if (msg.type === 'crdtPut') {
+        crdt.mergeChanges(msg.data.v)
+        resolve(msg)
       }
-    });
+    })
 
     this.store
       .get(finalKey)
       .then((data) => {
         try {
-          const msg = JSON.parse(data);
-          clearTimeout(cancelTimeout);
-          this.removeIdListener(msgId);
-          crdt.mergeChanges(msg.v);
-          this.emit("data", msg);
-          resolve(msg);
+          const msg = JSON.parse(data)
+          clearTimeout(cancelTimeout)
+          this.removeIdListener(msgId)
+          crdt.mergeChanges(msg.v)
+          this.emit('data', msg)
+          resolve(msg)
         } catch (e) {
           // do nothing
         }
       })
       .catch(() => {
         // do nothing
-      });
+      })
 
     // Do get
     this.network.sendToAll({
-      type: "crdtGet",
+      type: 'crdtGet',
       to: to || [],
       key: finalKey,
-      id: msgId,
-    });
-  });
+      id: msgId
+    })
+  })
 }

@@ -1,71 +1,70 @@
-
 import {
   type ToolDb,
   type VerificationData,
   ToolDbUserAdapter,
-  randomAnimal,
-} from "tool-db";
+  randomAnimal
+} from 'tool-db'
 
-import w3 from "web3";
-import { KeyStore } from "web3";
-import type { Web3Account } from "web3-eth-accounts";
+import w3 from 'web3'
+import { KeyStore } from 'web3'
+import type { Web3Account } from 'web3-eth-accounts'
 
 export default class ToolDbWeb3User extends ToolDbUserAdapter {
-  public web3: w3;
+  public web3: w3
 
-  private _user: Web3Account;
-  private _userName: string;
+  private _user: Web3Account
+  private _userName: string
 
   constructor(db: ToolDb) {
-    super(db);
-    this.web3 = new w3(w3.givenProvider);
-    this._user = this.web3.eth.accounts.create();
-    this._userName = randomAnimal();
+    super(db)
+    this.web3 = new w3(w3.givenProvider)
+    this._user = this.web3.eth.accounts.create()
+    this._userName = randomAnimal()
   }
 
   public anonUser() {
-    this._user = this.web3.eth.accounts.create();
-    this._userName = randomAnimal();
+    this._user = this.web3.eth.accounts.create()
+    this._userName = randomAnimal()
   }
 
   public setUser(account: Web3Account, name: string): void {
-    this._user = account;
-    this._userName = name;
+    this._user = account
+    this._userName = name
   }
 
   public signData(data: string) {
-    const signature = this.web3.eth.accounts.sign(data, this._user.privateKey);
+    const signature = this.web3.eth.accounts.sign(data, this._user.privateKey)
 
-    return Promise.resolve(signature.signature);
+    return Promise.resolve(signature.signature)
   }
 
   public verifySignature(message: Partial<VerificationData<any>>) {
-    if (!message.h || !message.s) return Promise.resolve(false);
+    if (!message.h || !message.s) return Promise.resolve(false)
 
-    const address = this.web3.eth.accounts.recover(message.h, message.s);
-    return Promise.resolve(address === message.a);
+    const address = this.web3.eth.accounts.recover(message.h, message.s)
+    return Promise.resolve(address === message.a)
   }
 
   public getAccountFromPrivate(privateKey: string) {
     return Promise.resolve(
       this.web3.eth.accounts.privateKeyToAccount(privateKey)
-    );
+    )
   }
 
   public encryptAccount(password: string) {
-    return Promise.resolve(this._user.encrypt(password));
+    return Promise.resolve(this._user.encrypt(password))
   }
 
   public decryptAccount(acc: string, password: string) {
-      const newAccount = this.web3.eth.accounts.decrypt(acc, password);
-      return Promise.resolve(newAccount);
+    const newAccount = this.web3.eth.accounts.decrypt(acc, password)
+    return Promise.resolve(newAccount)
   }
 
   public getAddress(): string {
-    return this._user.address;
+    return this._user.address
   }
 
   public getUsername(): string {
-    return this._userName;
+    return this._userName
   }
 }

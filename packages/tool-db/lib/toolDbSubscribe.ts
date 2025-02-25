@@ -1,4 +1,4 @@
-import { type ToolDb, textRandom } from ".";
+import { type ToolDb, textRandom } from '.'
 
 /**
  * Subscribe to all PUT updates for this key.
@@ -15,31 +15,31 @@ export default function toolDbSubscribe(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     if (userNamespaced && this.userAccount.getAddress() === undefined) {
-      reject(new Error("You are not authorized yet!"));
-      return;
+      reject(new Error('You are not authorized yet!'))
+      return
     }
 
     const finalKey = userNamespaced
       ? `:${this.userAccount.getAddress()}.${key}`
-      : key;
+      : key
 
-    this.logger("SUBSCRIBE", finalKey);
+    this.logger('SUBSCRIBE', finalKey)
 
-    const msgId = textRandom(10);
+    const msgId = textRandom(10)
 
     this.network.sendToAll({
-      type: "subscribe",
+      type: 'subscribe',
       key: finalKey,
       to: to || [],
-      id: msgId,
-    });
+      id: msgId
+    })
 
     this.store
       .get(finalKey)
       .then((data) => {
         try {
-          const message = JSON.parse(data);
-          this.triggerKeyListener(finalKey, message);
+          const message = JSON.parse(data)
+          this.triggerKeyListener(finalKey, message)
         } catch (e) {
           // do nothing
         }
@@ -48,7 +48,7 @@ export default function toolDbSubscribe(
         // do nothing
       })
       .finally(() => {
-        resolve();
-      });
-  });
+        resolve()
+      })
+  })
 }

@@ -1,6 +1,6 @@
-import { type ToolDb, type PutMessage, VerifyResult } from "..";
+import { type ToolDb, type PutMessage, VerifyResult } from '..'
 
-import toolDbVerificationWrapper from "../toolDbVerificationWrapper";
+import toolDbVerificationWrapper from '../toolDbVerificationWrapper'
 
 export default function handlePut(
   this: ToolDb,
@@ -10,32 +10,32 @@ export default function handlePut(
   toolDbVerificationWrapper.call(this, message.data).then((value) => {
     // this.logger("Verification wrapper result: ", value, message.k);
     if (value === VerifyResult.Verified) {
-      this.emit("put", message);
-      this.emit("data", message.data);
-      this.emit("verified", message);
+      this.emit('put', message)
+      this.emit('data', message.data)
+      this.emit('verified', message)
       // relay to other servers !!!
       const finalMessage: PutMessage = {
         ...message,
-        to: [...message.to, remotePeerId],
-      };
+        to: [...message.to, remotePeerId]
+      }
 
-      this.network.sendToAll(finalMessage, true);
+      this.network.sendToAll(finalMessage, true)
 
       this.store
         .get(finalMessage.data.k)
         .then((oldData) => {
-          const parsedOldData = JSON.parse(oldData);
+          const parsedOldData = JSON.parse(oldData)
           if (parsedOldData.t < finalMessage.data.t) {
-            const key = finalMessage.data.k;
-            this.triggerKeyListener(key, finalMessage.data);
+            const key = finalMessage.data.k
+            this.triggerKeyListener(key, finalMessage.data)
             this.store
               .put(finalMessage.data.k, JSON.stringify(finalMessage.data))
               .catch((e) => {
                 // do nothing
-              });
+              })
           } else {
-            const key = finalMessage.data.k;
-            this.triggerKeyListener(key, parsedOldData);
+            const key = finalMessage.data.k
+            this.triggerKeyListener(key, parsedOldData)
           }
           // } else {
           //   this.logger(
@@ -44,16 +44,16 @@ export default function handlePut(
           // }
         })
         .catch((e) => {
-          const key = message.data.k;
-          this.triggerKeyListener(key, message.data);
+          const key = message.data.k
+          this.triggerKeyListener(key, message.data)
           this.store
             .put(message.data.k, JSON.stringify(message.data))
             .catch((e) => {
               //
-            });
-        });
+            })
+        })
     } else {
-      this.logger("unverified message: ", value, message);
+      this.logger('unverified message: ', value, message)
     }
-  });
+  })
 }

@@ -1,49 +1,48 @@
-import type { ToolDb } from "..";
+import type { ToolDb } from '..'
 
 export default class ToolDbStorageAdapter {
-  private _tooldb: ToolDb;
+  private _tooldb: ToolDb
 
-  private _forceStorageName: string | undefined;
+  private _forceStorageName: string | undefined
 
   get tooldb() {
-    return this._tooldb;
+    return this._tooldb
   }
 
   get storageName() {
-    return this._forceStorageName || this._tooldb.options.storageName;
+    return this._forceStorageName || this._tooldb.options.storageName
   }
 
   constructor(db: ToolDb, forceStorageName?: string) {
-    this._tooldb = db;
+    this._tooldb = db
 
     if (forceStorageName) {
-      this._forceStorageName = forceStorageName;
+      this._forceStorageName = forceStorageName
     }
   }
 
   put(key: string, data: string): Promise<unknown> {
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   get(key: string): Promise<string> {
-    return Promise.resolve("");
+    return Promise.resolve('')
   }
 
   query(key: string): Promise<string[]> {
-    return Promise.resolve([]);
+    return Promise.resolve([])
   }
 }
 
-
 export class ToolDbStorageAdapterAdapter extends ToolDbStorageAdapter {
-  private _storage: ToolDbStorageAdapter;
+  private _storage: ToolDbStorageAdapter
 
   get storage() {
-    return this._storage;
+    return this._storage
   }
 
   constructor(storageAdapter: ToolDbStorageAdapter, forceStorageName?: string) {
-    super(storageAdapter.tooldb, forceStorageName);
-    this._storage = storageAdapter;
+    super(storageAdapter.tooldb, forceStorageName)
+    this._storage = storageAdapter
   }
 }

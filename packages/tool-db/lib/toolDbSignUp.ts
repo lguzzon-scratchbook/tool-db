@@ -4,8 +4,8 @@ import {
   textRandom,
   type VerificationData,
   proofOfWork,
-  sha256,
-} from ".";
+  sha256
+} from '.'
 
 export default async function toolDbSignUp(
   this: ToolDb,
@@ -13,60 +13,60 @@ export default async function toolDbSignUp(
   password: string,
   to?: string[]
 ): Promise<PutMessage<any>> {
-  const userRoot = `==${user}`;
+  const userRoot = `==${user}`
   return new Promise((resolve, reject) => {
     this.getData(userRoot, false, 3000, to)
       .then((data) => {
         if (data === null) {
-          const account = new this.options.userAdapter(this);
+          const account = new this.options.userAdapter(this)
           account.encryptAccount(sha256(password)).then((userData) => {
-            const timestamp = new Date().getTime();
+            const timestamp = new Date().getTime()
             const userDataString = `${JSON.stringify(
               userData
-            )}${account.getAddress()}${timestamp}`;
+            )}${account.getAddress()}${timestamp}`
 
             proofOfWork(userDataString, 0)
               .then(({ hash, nonce }) => {
                 account.signData(hash).then((signature) => {
                   const signupMessage: VerificationData = {
                     k: userRoot,
-                    a: account.getAddress() || "",
+                    a: account.getAddress() || '',
                     n: nonce,
                     t: timestamp,
                     h: hash,
                     s: signature,
                     v: userData,
-                    c: null,
-                  };
+                    c: null
+                  }
 
-                  this.logger("SIGNUP PUT", userRoot, signupMessage);
+                  this.logger('SIGNUP PUT', userRoot, signupMessage)
 
                   const finalMsg = {
-                    type: "put",
+                    type: 'put',
                     id: textRandom(10),
                     to: to || [],
-                    data: signupMessage,
-                  } as PutMessage;
+                    data: signupMessage
+                  } as PutMessage
 
-                  this.network.sendToAll(finalMsg);
+                  this.network.sendToAll(finalMsg)
                   this.store
                     .put(userRoot, JSON.stringify(signupMessage))
                     .catch((e) => {
                       // do nothing
                     })
                     .finally(() => {
-                      resolve(finalMsg);
-                    });
-                });
+                      resolve(finalMsg)
+                    })
+                })
               })
-              .catch(reject);
-          });
+              .catch(reject)
+          })
         } else {
-          reject(new Error("User already exists!"));
+          reject(new Error('User already exists!'))
         }
       })
       .catch(() => {
-        reject(new Error("Could not fetch user"));
-      });
-  });
+        reject(new Error('Could not fetch user'))
+      })
+  })
 }

@@ -5,11 +5,6 @@
     "outDir": "dist",
     "isolatedModules": true
   },
-  "include": [
-    "lib"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/__tests__/*",
-  ]
+  "include": ["lib"],
+  "exclude": ["node_modules", "**/__tests__/*"]
 }

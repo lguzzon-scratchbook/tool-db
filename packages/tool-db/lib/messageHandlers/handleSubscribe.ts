@@ -1,13 +1,13 @@
-import type { ToolDb, PutMessage, SubscribeMessage } from "..";
+import type { ToolDb, PutMessage, SubscribeMessage } from '..'
 
 export default function handleSubscribe(
   this: ToolDb,
   message: SubscribeMessage,
   remotePeerId: string
 ) {
-  const subId = `${remotePeerId}-${message.key}`;
+  const subId = `${remotePeerId}-${message.key}`
   if (!this.subscriptions.includes(subId)) {
-    this.subscriptions.push(subId);
+    this.subscriptions.push(subId)
 
     this.addKeyListener(message.key, (msg) => {
       if (remotePeerId) {
@@ -16,12 +16,12 @@ export default function handleSubscribe(
         const newMsg: PutMessage = {
           data: msg,
           id: message.id,
-          type: "put",
-          to: [],
-        };
-        this.network.sendToClientId(remotePeerId, newMsg);
+          type: 'put',
+          to: []
+        }
+        this.network.sendToClientId(remotePeerId, newMsg)
       }
-    });
+    })
   }
 
   // basically the exact same as GET, below
@@ -32,15 +32,15 @@ export default function handleSubscribe(
         const oldData: PutMessage = {
           data: JSON.parse(data),
           id: message.id,
-          type: "put",
-          to: [],
-        };
-        this.network.sendToClientId(remotePeerId, oldData);
+          type: 'put',
+          to: []
+        }
+        this.network.sendToClientId(remotePeerId, oldData)
       } catch (e) {
         // do nothing
       }
     })
     .catch((e) => {
       // do nothing
-    });
+    })
 }

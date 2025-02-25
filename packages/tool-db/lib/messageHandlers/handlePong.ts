@@ -1,4 +1,4 @@
-import { type ToolDb, verifyPeer, type PongMessage } from "..";
+import { type ToolDb, verifyPeer, type PongMessage } from '..'
 
 export default function handlePong(
   this: ToolDb,
@@ -6,8 +6,8 @@ export default function handlePong(
   remotePeerId: string
 ) {
   if (!this.isConnected) {
-    this.isConnected = true;
-    this.onConnect();
+    this.isConnected = true
+    this.onConnect()
   }
 
   message.servers.forEach((peer) => {
@@ -17,14 +17,14 @@ export default function handlePong(
         // Add this peer to our list of peers
         const filteredPeers = this.serverPeers.filter(
           (p) => p.address === peer.address
-        );
+        )
         if (filteredPeers.length === 0 && peer.host && peer.port) {
           // Add this peer to the list
-          this.serverPeers.push(peer);
+          this.serverPeers.push(peer)
         }
       }
-    });
-  });
+    })
+  })
 
-  this.onPeerConnect(this.peerAccount.getAddress() || "");
+  this.onPeerConnect(this.peerAccount.getAddress() || '')
 }

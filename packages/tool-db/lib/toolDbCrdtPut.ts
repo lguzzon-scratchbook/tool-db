@@ -4,8 +4,8 @@ import {
   textRandom,
   type VerificationData,
   proofOfWork,
-  type BaseCrdt,
-} from ".";
+  type BaseCrdt
+} from '.'
 
 /**
  * Triggers a PUT request to other peers.
@@ -22,24 +22,24 @@ export default function toolDbCrdtPut<T = any>(
   to?: string[]
 ): Promise<CrdtPutMessage | null> {
   return new Promise((resolve, reject) => {
-    if (key.includes(".")) {
+    if (key.includes('.')) {
       // Dots are used as a delimitator character between bublic keys and the key of the user's data
-      reject(new Error(`Key cannot include dots!; ${key}`));
-      return;
+      reject(new Error(`Key cannot include dots!; ${key}`))
+      return
     }
 
     if (!this.userAccount.getAddress()) {
-      reject(new Error("You need to log in before you can PUT."));
-      return;
+      reject(new Error('You need to log in before you can PUT.'))
+      return
     }
 
-    const timestamp = new Date().getTime();
+    const timestamp = new Date().getTime()
 
-    const crdtChanges = crdt.getChanges();
+    const crdtChanges = crdt.getChanges()
 
-    const encodedData = JSON.stringify(crdtChanges);
+    const encodedData = JSON.stringify(crdtChanges)
 
-    const dataString = `${encodedData}${this.userAccount.getAddress()}${timestamp}`;
+    const dataString = `${encodedData}${this.userAccount.getAddress()}${timestamp}`
 
     // WORK
     proofOfWork(dataString, this.options.pow)
@@ -51,28 +51,28 @@ export default function toolDbCrdtPut<T = any>(
               k: userNamespaced
                 ? `:${this.userAccount.getAddress()}.${key}`
                 : key,
-              a: this.userAccount.getAddress() || "",
+              a: this.userAccount.getAddress() || '',
               n: nonce,
               t: timestamp,
               h: hash,
               s: signature,
               v: crdtChanges,
-              c: crdt.type,
-            };
+              c: crdt.type
+            }
 
-            this.logger("PUT CRDT", key, data);
+            this.logger('PUT CRDT', key, data)
 
             const finalMessage: CrdtPutMessage<any> = {
-              type: "crdtPut",
+              type: 'crdtPut',
               id: textRandom(10),
               to: to || [],
-              data,
-            };
-            this.network.sendToAll(finalMessage);
-            resolve(finalMessage);
+              data
+            }
+            this.network.sendToAll(finalMessage)
+            resolve(finalMessage)
           }
-        });
+        })
       })
-      .catch(reject);
-  });
+      .catch(reject)
+  })
 }

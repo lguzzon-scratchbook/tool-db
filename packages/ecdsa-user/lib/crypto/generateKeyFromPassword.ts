@@ -1,32 +1,32 @@
-import stringToArrayBuffer from "../utils/stringToArrayBuffer";
+import stringToArrayBuffer from '../utils/stringToArrayBuffer'
 
-import getCrypto from "./getCrypto";
+import getCrypto from './getCrypto'
 
 export default function generateKeyFromPassword(password: string) {
-  const crypto = getCrypto();
+  const crypto = getCrypto()
   return crypto.subtle
     .importKey(
-      "raw",
+      'raw',
       stringToArrayBuffer(password),
-      { name: "PBKDF2" },
+      { name: 'PBKDF2' },
       false,
-      ["deriveKey"]
+      ['deriveKey']
     )
     .then((importedPassword) => {
       return crypto.subtle.deriveKey(
         {
-          name: "PBKDF2",
-          salt: stringToArrayBuffer("t6sa@8d7!2ñs?=adjq2ng"),
+          name: 'PBKDF2',
+          salt: stringToArrayBuffer('t6sa@8d7!2ñs?=adjq2ng'),
           iterations: 100000,
-          hash: "SHA-256",
+          hash: 'SHA-256'
         },
         importedPassword,
         {
-          name: "AES-GCM",
-          length: 128,
+          name: 'AES-GCM',
+          length: 128
         },
         false,
-        ["encrypt", "decrypt"]
-      );
-    });
+        ['encrypt', 'decrypt']
+      )
+    })
 }

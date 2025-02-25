@@ -5,220 +5,220 @@ import {
   catchReturn,
   VerifyResult,
   getPeerSignature,
-  verifyPeer,
-} from "tool-db";
+  verifyPeer
+} from 'tool-db'
 
-import ToolDbLeveldb from "../packages/leveldb-store/dist";
-import ToolDbWebsockets from "../packages/websocket-network/dist";
-import ToolDbWeb3 from "../packages/web3-user/dist";
+import ToolDbLeveldb from '../packages/leveldb-store/dist'
+import ToolDbWebsockets from '../packages/websocket-network/dist'
+import ToolDbWeb3 from '../packages/web3-user/dist'
 
-jest.setTimeout(10000);
+jest.setTimeout(10000)
 
-let ClientA: ToolDb;
+let ClientA: ToolDb
 
 beforeAll((done) => {
   ClientA = new ToolDb({
     server: true,
-    host: "127.0.0.1",
+    host: '127.0.0.1',
     port: 8888,
     storageAdapter: ToolDbLeveldb,
     networkAdapter: ToolDbWebsockets,
     userAdapter: ToolDbWeb3,
-    storageName: "test-verify-a",
-  });
-  ClientA.anonSignIn();
+    storageName: 'test-verify-a'
+  })
+  ClientA.anonSignIn()
 
-  done();
-});
+  done()
+})
 
 afterAll((done) => {
-  ClientA.network.server.close();
-  setTimeout(done, 1000);
-});
+  ClientA.network.server.close()
+  setTimeout(done, 1000)
+})
 
 const putOk: VerificationData<string> = {
-  k: "test",
-  a: "0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD",
+  k: 'test',
+  a: '0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD',
   n: 0,
   t: 1647640220476,
-  h: "0d4d06c94612cbebd39b6bf3ccc54f666590612dce89f07b75b9482063006e7d",
-  s: "0x0857c2e6a256d9a866500be860288510b8b84f0d4e35f75cda97531492e4ba670fe7e9b2bca6abe4a1d270002947493ac261657b3ea6640127af7dab783d5fb61c",
-  v: "value",
-  c: null,
-};
+  h: '0d4d06c94612cbebd39b6bf3ccc54f666590612dce89f07b75b9482063006e7d',
+  s: '0x0857c2e6a256d9a866500be860288510b8b84f0d4e35f75cda97531492e4ba670fe7e9b2bca6abe4a1d270002947493ac261657b3ea6640127af7dab783d5fb61c',
+  v: 'value',
+  c: null
+}
 
-it("Can verify PUT", () => {
+it('Can verify PUT', () => {
   return ClientA.verifyMessage<string>(putOk).then((result) => {
-    expect(result).toEqual(VerifyResult.Verified);
-  });
-});
+    expect(result).toEqual(VerifyResult.Verified)
+  })
+})
 
-it("Can catch invalid POW", () => {
+it('Can catch invalid POW', () => {
   return ClientA.verifyMessage(putOk, 5).then((result) => {
-    expect(result).toEqual(VerifyResult.NoProofOfWork);
-  });
-});
+    expect(result).toEqual(VerifyResult.NoProofOfWork)
+  })
+})
 
 const putSig: VerificationData<string> = {
-  k: "test",
-  a: "0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD",
+  k: 'test',
+  a: '0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD',
   n: 8312,
   t: 1647640402279,
-  h: "000669d4ee75d8610e55304a21c5acf9856011828a295c129ca95344696cf2e0",
-  s: "0xd4dbeb203f11f55160e8620e014f12ab9bb046bcabbbe2f39993ae89ef32d4c53e6b35b638ea75a7a9275e49c98a1f65dd18f1435f14e4d53bebfd070981f5f81b",
-  v: "value",
-  c: null,
-};
+  h: '000669d4ee75d8610e55304a21c5acf9856011828a295c129ca95344696cf2e0',
+  s: '0xd4dbeb203f11f55160e8620e014f12ab9bb046bcabbbe2f39993ae89ef32d4c53e6b35b638ea75a7a9275e49c98a1f65dd18f1435f14e4d53bebfd070981f5f81b',
+  v: 'value',
+  c: null
+}
 
-it("Can catch tampered messages (signature)", () => {
+it('Can catch tampered messages (signature)', () => {
   return ClientA.verifyMessage(putSig, 3).then((result) => {
-    expect(result).toEqual(VerifyResult.InvalidSignature);
-  });
-});
+    expect(result).toEqual(VerifyResult.InvalidSignature)
+  })
+})
 
 const tamperedNonce: VerificationData<string> = {
-  k: "test",
-  a: "0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD",
+  k: 'test',
+  a: '0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD',
   n: 82,
   t: 1647640402279,
-  h: "000669d4ee75d8610e55304a21c5acf9856011828a295c129ca95344696cf2e0",
-  s: "0xd4dbeb203f11f55160e8620e014f12ab9bb046bcabbbe2f39993ae89ef32d4c53e5b35b638ea75a7a9275e49c98a1f65dd18f1435f14e4d53bebfd070981f5f81b",
-  v: "value",
-  c: null,
-};
+  h: '000669d4ee75d8610e55304a21c5acf9856011828a295c129ca95344696cf2e0',
+  s: '0xd4dbeb203f11f55160e8620e014f12ab9bb046bcabbbe2f39993ae89ef32d4c53e5b35b638ea75a7a9275e49c98a1f65dd18f1435f14e4d53bebfd070981f5f81b',
+  v: 'value',
+  c: null
+}
 
-it("Can catch tampered POW", () => {
+it('Can catch tampered POW', () => {
   return ClientA.verifyMessage(tamperedNonce, 3).then((result) => {
-    expect(result).toEqual(VerifyResult.InvalidHashNonce);
-  });
-});
+    expect(result).toEqual(VerifyResult.InvalidHashNonce)
+  })
+})
 
-it("Can catch messages with missing data", () => {
-  const delA: any = { ...putOk }.h = undefined;
+it('Can catch messages with missing data', () => {
+  const delA: any = ({ ...putOk }.h = undefined)
   const pa = ClientA.verifyMessage(delA).then((result) => {
-    expect(result).toEqual(VerifyResult.InvalidData);
-  });
+    expect(result).toEqual(VerifyResult.InvalidData)
+  })
 
-  const delB: any = { ...putOk }.k = undefined;
+  const delB: any = ({ ...putOk }.k = undefined)
   const pb = ClientA.verifyMessage(delB).then((result) => {
-    expect(result).toEqual(VerifyResult.InvalidData);
-  });
+    expect(result).toEqual(VerifyResult.InvalidData)
+  })
 
-  const delC: any = { ...putOk }.n = undefined;
+  const delC: any = ({ ...putOk }.n = undefined)
   const pc = ClientA.verifyMessage(delC).then((result) => {
-    expect(result).toEqual(VerifyResult.InvalidData);
-  });
+    expect(result).toEqual(VerifyResult.InvalidData)
+  })
 
-  const delD: any = { ...putOk }.a = undefined;
+  const delD: any = ({ ...putOk }.a = undefined)
   const pd = ClientA.verifyMessage(delD).then((result) => {
-    expect(result).toEqual(VerifyResult.InvalidData);
-  });
+    expect(result).toEqual(VerifyResult.InvalidData)
+  })
 
-  const delE: any = { ...putOk }.s = undefined;
+  const delE: any = ({ ...putOk }.s = undefined)
   const pe = ClientA.verifyMessage(delE).then((result) => {
-    expect(result).toEqual(VerifyResult.InvalidData);
-  });
+    expect(result).toEqual(VerifyResult.InvalidData)
+  })
 
-  const delF: any = { ...putOk }.t = undefined;
+  const delF: any = ({ ...putOk }.t = undefined)
   const pf = ClientA.verifyMessage(delF).then((result) => {
-    expect(result).toEqual(VerifyResult.InvalidData);
-  });
+    expect(result).toEqual(VerifyResult.InvalidData)
+  })
 
-  const delG: any = { ...putOk }.v = undefined;
+  const delG: any = ({ ...putOk }.v = undefined)
   const pg = ClientA.verifyMessage(delG).then((result) => {
-    expect(result).toEqual(VerifyResult.InvalidData);
-  });
+    expect(result).toEqual(VerifyResult.InvalidData)
+  })
 
-  return Promise.all([pa, pb, pc, pd, pe, pf, pg]);
-});
+  return Promise.all([pa, pb, pc, pd, pe, pf, pg])
+})
 
-it("Can print errors", async () => {
+it('Can print errors', async () => {
   const rejectPromise = new Promise((resolve, reject) => {
-    reject();
-  }).catch(catchReturn);
+    reject()
+  }).catch(catchReturn)
 
-  expect(await rejectPromise).toBe(undefined);
-});
+  expect(await rejectPromise).toBe(undefined)
+})
 
 const putTime: VerificationData<string> = {
-  k: "test",
-  a: "0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD",
+  k: 'test',
+  a: '0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD',
   n: 8312,
   t: 2647640402279,
-  h: "000669d4ee75d8610e55304a21c5acf9856011828a295c129ca95344696cf2e0",
-  s: "0xd4dbeb203f11f55160e8620e014f12ab9bb046bcabbbe2f39993ae89ef32d4c53e5b35b638ea75a7a9275e49c98a1f65dd18f1435f14e4d53bebfd070981f5f81b",
-  v: "value",
-  c: null,
-};
+  h: '000669d4ee75d8610e55304a21c5acf9856011828a295c129ca95344696cf2e0',
+  s: '0xd4dbeb203f11f55160e8620e014f12ab9bb046bcabbbe2f39993ae89ef32d4c53e5b35b638ea75a7a9275e49c98a1f65dd18f1435f14e4d53bebfd070981f5f81b',
+  v: 'value',
+  c: null
+}
 
-it("Can catch tampered messages (time)", () => {
+it('Can catch tampered messages (time)', () => {
   return ClientA.verifyMessage(putTime).then((result) => {
-    expect(result).toEqual(VerifyResult.InvalidTimestamp);
-  });
-});
+    expect(result).toEqual(VerifyResult.InvalidTimestamp)
+  })
+})
 
 const privatePut: VerificationData<string> = {
-  k: ":0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD.test",
-  a: "0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD",
+  k: ':0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD.test',
+  a: '0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD',
   n: 9245,
   t: 1647640485709,
-  h: "000a38b897728bc1a47be95ffdc0643b346a10e4159ac8c8fb4d33bd78e541d7",
-  s: "0x1e3ca6c48f5ae7d55104217d7e38860ac31693ce80a56aca4c6ca0bd22c372e909a96d67470a26c15834c76c30a0b775d33a57854912dea9d03342dcd28334bb1c",
-  v: "value",
-  c: null,
-};
+  h: '000a38b897728bc1a47be95ffdc0643b346a10e4159ac8c8fb4d33bd78e541d7',
+  s: '0x1e3ca6c48f5ae7d55104217d7e38860ac31693ce80a56aca4c6ca0bd22c372e909a96d67470a26c15834c76c30a0b775d33a57854912dea9d03342dcd28334bb1c',
+  v: 'value',
+  c: null
+}
 
-it("Can verify namespaced PUT", () => {
+it('Can verify namespaced PUT', () => {
   return ClientA.verifyMessage(privatePut).then((result) => {
-    expect(result).toEqual(VerifyResult.Verified);
-  });
-});
+    expect(result).toEqual(VerifyResult.Verified)
+  })
+})
 
 const privatePutAddress: VerificationData<string> = {
-  k: ":0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD.test",
-  a: "0x1E80E2B44676624ff6712BeC97A22A42413a266f",
+  k: ':0xadd182F22D7ceaE234a99c7c89c93c664bA3ECaD.test',
+  a: '0x1E80E2B44676624ff6712BeC97A22A42413a266f',
   n: 9245,
   t: 1647640485709,
-  h: "000a38b897728bc1a47be95ffdc0643b346a10e4159ac8c8fb4d33bd78e541d7",
-  s: "0x1e3ca6c48f5ae7d55104217d7e38860ac31693ce80a56aca4c6ca0bd22c372e909a96d67470a26c15834c76c30a0b775d33a57854912dea9d03342dcd28334bb1c",
-  v: "value",
-  c: null,
-};
+  h: '000a38b897728bc1a47be95ffdc0643b346a10e4159ac8c8fb4d33bd78e541d7',
+  s: '0x1e3ca6c48f5ae7d55104217d7e38860ac31693ce80a56aca4c6ca0bd22c372e909a96d67470a26c15834c76c30a0b775d33a57854912dea9d03342dcd28334bb1c',
+  v: 'value',
+  c: null
+}
 
-it("Can catch address replacement", () => {
+it('Can catch address replacement', () => {
   return ClientA.verifyMessage(privatePutAddress).then((result) => {
-    expect(result).toEqual(VerifyResult.AddressMismatch);
-  });
-});
+    expect(result).toEqual(VerifyResult.AddressMismatch)
+  })
+})
 
-it("Can verify peers", async () => {
-  const timestamp = new Date().getTime();
+it('Can verify peers', async () => {
+  const timestamp = new Date().getTime()
 
   const signature = await getPeerSignature(
     ClientA.peerAccount,
-    "topic",
+    'topic',
     timestamp,
-    "host",
+    'host',
     8080
-  );
+  )
 
-  expect(signature).toBeDefined();
+  expect(signature).toBeDefined()
 
-  if (!signature) return;
+  if (!signature) return
 
   const peerData: Peer = {
-    topic: "topic",
+    topic: 'topic',
     timestamp: timestamp,
-    host: "host",
+    host: 'host',
     port: 8080,
-    address: ClientA.peerAccount.getAddress() || "",
-    sig: signature,
-  };
+    address: ClientA.peerAccount.getAddress() || '',
+    sig: signature
+  }
 
-  const verified = await verifyPeer(ClientA, peerData);
+  const verified = await verifyPeer(ClientA, peerData)
 
-  expect(verified).toBeTruthy();
-});
+  expect(verified).toBeTruthy()
+})
 
 // This test fails because we are testing on a local node
 // if it were a test against a remote node it will work

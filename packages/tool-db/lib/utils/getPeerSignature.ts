@@ -1,4 +1,4 @@
-import { type ToolDbUserAdapter, sha256 } from "..";
+import { type ToolDbUserAdapter, sha256 } from '..'
 
 export default function getPeerSignature(
   account: ToolDbUserAdapter,
@@ -7,6 +7,6 @@ export default function getPeerSignature(
   host: string,
   port: number
 ) {
-  const dataToSign = sha256(`${topic}-${timestamp}-${host}:${port}`);
-  return account.signData(dataToSign);
+  const dataToSign = sha256(`${topic}-${timestamp}-${host}:${port}`)
+  return account.signData(dataToSign)
 }

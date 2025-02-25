@@ -1,23 +1,23 @@
-import getCrypto from "./getCrypto";
+import getCrypto from './getCrypto'
 
 export default function base64ToPubkey(str: string) {
-  const crypto = getCrypto();
+  const crypto = getCrypto()
 
   return crypto.subtle.importKey(
-    "jwk",
+    'jwk',
     {
-      crv: "P-256",
+      crv: 'P-256',
       ext: true,
-      key_ops: ["verify"],
-      kty: "EC",
+      key_ops: ['verify'],
+      kty: 'EC',
       x: str.slice(0, 43),
-      y: str.slice(43),
+      y: str.slice(43)
     },
     {
-      name: "ECDSA",
-      namedCurve: "P-256",
+      name: 'ECDSA',
+      namedCurve: 'P-256'
     },
     true,
-    ["verify"]
-  );
+    ['verify']
+  )
 }
